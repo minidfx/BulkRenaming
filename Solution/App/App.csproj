@@ -98,6 +98,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\BootstrapperBase.cs" />
+    <Compile Include="Infrastructure\CaliburnBootstrapper.cs" />
+    <Compile Include="Infrastructure\Contracts\IBootstrapper.cs" />
+    <Compile Include="Infrastructure\UnityBootstrapper.cs" />
+    <Compile Include="Infrastructure\UWPBootstrapper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
