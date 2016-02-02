@@ -1,11 +1,35 @@
-﻿<Page
-    x:Class="App.Views.ShellView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:App"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+﻿<Page x:Class="App.Views.ShellView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:controls="using:WinRTXamlToolkit.Controls"
+      xmlns:interactivity="using:WinRTXamlToolkit.Interactivity"
+      xmlns:behaviors="using:App.Behaviors"
+      mc:Ignorable="d" d:DataContext="{d:IShellViewModel}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding PathSelected}" />
+
+        <SplitView Grid.Row="1"
+                   Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                   PanePlacement="Left"
+                   IsPaneOpen="True"
+                   OpenPaneLength="200"
+                   DisplayMode="CompactInline">
+            <SplitView.Pane>
+                <controls:TreeView>
+                    <interactivity:Interaction.Behaviors>
+                        <behaviors:TreeViewBehavior />
+                    </interactivity:Interaction.Behaviors>
+                </controls:TreeView>
+            </SplitView.Pane>
+            <SplitView.Content />
+        </SplitView>
+    </Grid>
 </Page>
