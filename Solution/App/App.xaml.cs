@@ -1,13 +1,13 @@
 ﻿using Windows.ApplicationModel.Activation;
-using Windows.UI.Xaml;
 using App.Infrastructure;
+using App.ViewModels;
 
 namespace App
 {
     /// <summary>
     ///     Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : Application
+    public sealed partial class App
     {
         private readonly UWPBootstrapper _bootstrapper;
 
@@ -19,7 +19,7 @@ namespace App
         {
             this.InitializeComponent();
 
-            this._bootstrapper = new UWPBootstrapper(this);
+            this._bootstrapper = new UWPBootstrapper(this.DisplayRootViewFor<ShellViewModel>);
         }
 
         /// <summary>

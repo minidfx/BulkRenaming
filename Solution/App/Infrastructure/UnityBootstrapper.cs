@@ -1,5 +1,4 @@
-﻿using App.Infrastructure.Contracts;
-using Microsoft.Practices.Unity;
+﻿using Microsoft.Practices.Unity;
 
 namespace App.Infrastructure
 {
@@ -12,11 +11,9 @@ namespace App.Infrastructure
 
         protected UnityContainer UnityContainer { get; }
 
-        protected override void Configure()
+        public override void Dispose()
         {
-            base.Configure();
-
-            this.UnityContainer.RegisterType<IBootstrapper, UWPBootstrapper>();
+            this.UnityContainer.Dispose();
         }
     }
 }

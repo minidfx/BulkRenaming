@@ -1,17 +1,19 @@
-﻿using Windows.ApplicationModel.Activation;
-using App.Infrastructure.Contracts;
+﻿using System;
+using Windows.ApplicationModel.Activation;
 
 namespace App.Infrastructure
 {
-    public abstract class BootstrapperBase : IBootstrapper
+    public abstract class BootstrapperBase : IDisposable
     {
-        protected virtual void Configure()
-        {
-        }
+        public abstract void Dispose();
 
         public virtual void Run(LaunchActivatedEventArgs e)
         {
             this.Configure();
+        }
+
+        protected virtual void Configure()
+        {
         }
     }
 }
