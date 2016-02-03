@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace App.Models.Contracts
 {
@@ -6,5 +7,6 @@ namespace App.Models.Contracts
     {
         string Name { get; set; }
         IEnumerable<ITreeItemModel> Items { get; set; }
+        Uri Path { get; set; }
     }
 }

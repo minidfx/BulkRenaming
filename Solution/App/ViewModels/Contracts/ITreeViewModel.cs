@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using App.Models.Contracts;
 
 namespace App.ViewModels.Contracts
 {
     public interface ITreeViewModel
     {
-        IEnumerable<ITreeViewModel> Items { get; }
+        IEnumerable<ITreeItemModel> Items { get; }
     }
 }

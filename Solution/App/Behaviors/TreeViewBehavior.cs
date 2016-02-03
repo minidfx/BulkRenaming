@@ -1,4 +1,5 @@
 ﻿using System;
+using App.Models.Contracts;
 using App.ViewModels.Contracts;
 using WinRTXamlToolkit.Controls;
 using WinRTXamlToolkit.Interactivity;
@@ -17,10 +18,22 @@ namespace App.Behaviors
                 throw new ArgumentException("The view model associated must implement the interface ITreeViewModel.");
             }
 
-            foreach (var treeItemModel in viewModel.Items)
+            foreach (var item in viewModel.Items)
             {
-                // Read the view model and fill the treeview
+                this.AssociatedObject.Items?.Add(this.BuildTreeViewItem(item));
             }
+        }
+
+        private TreeViewItem BuildTreeViewItem(ITreeItemModel treeItemModel)
+        {
+            var newTreeViewItem = new TreeViewItem {Header = treeItemModel.Name};
+
+            foreach (var item in treeItemModel.Items)
+            {
+                newTreeViewItem.Items?.Add(this.BuildTreeViewItem(item));
+            }
+
+            return newTreeViewItem;
         }
     }
 }
