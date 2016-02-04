@@ -58,9 +58,9 @@ namespace App.ViewModels
 
         #region Interface Implementations
 
-        public void InitShell()
+        public Task ApplyAsync()
         {
-            this._openFolderService = ServiceLocator.Current.GetInstance<IOpenFolderService>();
+            throw new NotImplementedException();
         }
 
         public async Task BrowseAsync()
@@ -73,9 +73,9 @@ namespace App.ViewModels
             this.NotifyOfPropertyChange(() => this.FolderSelected);
         }
 
-        public Task ApplyAsync()
+        public void InitShell()
         {
-            throw new NotImplementedException();
+            this._openFolderService = ServiceLocator.Current.GetInstance<IOpenFolderService>();
         }
 
         #endregion

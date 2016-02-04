@@ -72,7 +72,7 @@
       &lt;/Entry.SortBy&gt;&#xD;
     &lt;/Entry&gt;&#xD;
   &lt;/TypePattern&gt;&#xD;
-  &lt;TypePattern DisplayName="Default Pattern"&gt;&#xD;
+  &lt;TypePattern DisplayName="Default Pattern" RemoveRegions="AllExceptGenerated"&gt;&#xD;
     &lt;Region Name="Public Delegates"&gt;&#xD;
       &lt;Entry DisplayName="Public Delegates" Priority="100"&gt;&#xD;
         &lt;Entry.Match&gt;&#xD;
@@ -111,7 +111,7 @@
           &lt;/Or&gt;&#xD;
         &lt;/Entry.Match&gt;&#xD;
         &lt;Entry.SortBy&gt;&#xD;
-          &lt;Kind Order="Constant Field" /&gt;&#xD;
+          &lt;Name /&gt;&#xD;
         &lt;/Entry.SortBy&gt;&#xD;
       &lt;/Entry&gt;&#xD;
     &lt;/Region&gt;&#xD;
@@ -137,7 +137,8 @@
           &lt;Kind Is="Constructor" /&gt;&#xD;
         &lt;/Entry.Match&gt;&#xD;
         &lt;Entry.SortBy&gt;&#xD;
-          &lt;Static /&gt;&#xD;
+          &lt;Sealed /&gt;&#xD;
+          &lt;Name /&gt;&#xD;
         &lt;/Entry.SortBy&gt;&#xD;
       &lt;/Entry&gt;&#xD;
     &lt;/Region&gt;&#xD;
@@ -160,7 +161,8 @@
           &lt;/And&gt;&#xD;
         &lt;/Entry.Match&gt;&#xD;
         &lt;Entry.SortBy&gt;&#xD;
-          &lt;ImplementsInterface Immediate="True" /&gt;&#xD;
+          &lt;ImplementsInterface /&gt;&#xD;
+          &lt;Name /&gt;&#xD;
         &lt;/Entry.SortBy&gt;&#xD;
       &lt;/Entry&gt;&#xD;
     &lt;/Region&gt;&#xD;
