@@ -10,7 +10,12 @@ namespace App.Services
     {
         public async Task<StorageFolder> PromptAsync()
         {
-            var folderPicker = new FolderPicker();
+            var folderPicker = new FolderPicker
+                               {
+                                   ViewMode = PickerViewMode.Thumbnail,
+                                   SuggestedStartLocation = PickerLocationId.Desktop,
+                                   FileTypeFilter = {"."}
+                               };
 
             return await folderPicker.PickSingleFolderAsync();
         }
