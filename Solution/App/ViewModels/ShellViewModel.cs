@@ -68,7 +68,7 @@ namespace App.ViewModels
             this.FolderSelected = await this._openFolderService.PromptAsync();
 
             this.Files.Clear();
-            await this.FetchFolder();
+            await this.FetchFolderAsync();
 
             this.NotifyOfPropertyChange(() => this.FolderSelected);
         }
@@ -99,7 +99,7 @@ namespace App.ViewModels
             throw new NotImplementedException();
         }
 
-        private async Task FetchFolder()
+        private async Task FetchFolderAsync()
         {
             var entries = await this.FolderSelected.GetFilesAsync();
 
