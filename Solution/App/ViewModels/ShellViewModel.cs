@@ -15,6 +15,28 @@ namespace App.ViewModels
     public sealed class ShellViewModel : Screen, IShellViewModel
     {
         private IOpenFolderService _openFolderService;
+        private string _pattern;
+        private string _replacePattern;
+
+        public string Pattern
+        {
+            get { return this._pattern; }
+            set
+            {
+                UpdatePattern(value);
+                this._pattern = value;
+            }
+        }
+
+        public string ReplacePattern
+        {
+            get { return this._replacePattern; }
+            set
+            {
+                UpdateReplacePattern(value);
+                this._replacePattern = value;
+            }
+        }
 
         public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
         public StorageFolder FolderSelected { get; private set; }
@@ -28,10 +50,10 @@ namespace App.ViewModels
         {
             this.FolderSelected = await this._openFolderService.PromptAsync();
 
-            this.NotifyOfPropertyChange(() => this.FolderSelected);
-
             this.Files.Clear();
             await this.FetchFolder();
+
+            this.NotifyOfPropertyChange(() => this.FolderSelected);
         }
 
         public Task ApplyAsync()
@@ -44,6 +66,16 @@ namespace App.ViewModels
             base.OnViewLoaded(view);
 
             this.NotifyOfPropertyChange(() => this.FolderSelected);
+        }
+
+        private static void UpdatePattern(string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void UpdateReplacePattern(string value)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task FetchFolder()
