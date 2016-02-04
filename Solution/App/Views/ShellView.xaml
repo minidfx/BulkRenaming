@@ -18,7 +18,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding PathSelected}" />
+            <TextBlock Grid.Row="0" Text="{Binding FolderSelected}" />
 
             <Button Grid.Column="1" Content="Browse ..." x:Name="BrowseAsync" />
         </Grid>

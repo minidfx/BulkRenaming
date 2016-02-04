@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.Storage;
 using App.Models.Contracts;
 
 namespace App.ViewModels.Contracts
@@ -8,7 +9,7 @@ namespace App.ViewModels.Contracts
     {
         ObservableCollection<IListViewModel> Files { get; }
 
-        string PathSelected { get; }
+        StorageFolder FolderSelected { get; }
 
         void InitShell();
         Task BrowseAsync();

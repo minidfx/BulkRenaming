@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 using App.Models;
 using App.Models.Contracts;
 using App.Services.Contracts;
@@ -17,7 +17,7 @@ namespace App.ViewModels
         private IOpenFolderService _openFolderService;
 
         public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
-        public string PathSelected { get; private set; }
+        public StorageFolder FolderSelected { get; private set; }
 
         public void InitShell()
         {
@@ -26,7 +26,12 @@ namespace App.ViewModels
 
         public async Task BrowseAsync()
         {
-            var folder = await this._openFolderService.PromptAsync();
+            this.FolderSelected = await this._openFolderService.PromptAsync();
+
+            this.NotifyOfPropertyChange(() => this.FolderSelected);
+
+            this.Files.Clear();
+            await this.FetchFolder();
         }
 
         public Task ApplyAsync()
@@ -38,19 +43,16 @@ namespace App.ViewModels
         {
             base.OnViewLoaded(view);
 
-            this.PathSelected = Directory.GetCurrentDirectory();
-            this.NotifyOfPropertyChange(() => this.PathSelected);
-
-            this.FetchFolder();
+            this.NotifyOfPropertyChange(() => this.FolderSelected);
         }
 
-        private void FetchFolder()
+        private async Task FetchFolder()
         {
-            var entries = Directory.GetFiles(this.PathSelected);
+            var entries = await this.FolderSelected.GetFilesAsync();
 
-            foreach (var entry in entries.Select(entry => new {FileName = Path.GetFileName(entry), Path = entry}))
+            foreach (var entry in entries.Select(entry => new {entry.Name, entry.Path}))
             {
-                this.Files.Add(new ListViewModel(entry.FileName, new Uri(entry.Path)));
+                this.Files.Add(new ListViewModel(entry.Name, new Uri(entry.Path)));
             }
         }
     }
