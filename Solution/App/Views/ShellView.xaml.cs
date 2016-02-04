@@ -7,9 +7,13 @@ namespace App.Views
     /// </summary>
     public sealed partial class ShellView
     {
+        #region Constructors
+
         public ShellView()
         {
             this.InitializeComponent();
         }
+
+        #endregion
     }
 }

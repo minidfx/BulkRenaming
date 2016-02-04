@@ -1,8 +1,11 @@
 ﻿using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
+
 using App.Infrastructure;
 using App.ViewModels.Contracts;
+
 using Caliburn.Micro;
+
 using Microsoft.Practices.ServiceLocation;
 
 namespace App
@@ -12,7 +15,13 @@ namespace App
     /// </summary>
     public sealed partial class App
     {
+        #region Fields
+
         private readonly UWPBootstrapper _bootstrapper;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
@@ -29,7 +38,7 @@ namespace App
                 var shellViewModel = ServiceLocator.Current.GetInstance<IShellViewModel>();
                 shellViewModel.InitShell();
 
-                var uiElement = (UIElement)ViewLocator.LocateForModel(shellViewModel, null, null);
+                var uiElement = ViewLocator.LocateForModel(shellViewModel, null, null);
                 ViewModelBinder.Bind(shellViewModel, uiElement, null);
                 var activate = shellViewModel as IActivate;
 
@@ -39,6 +48,10 @@ namespace App
                 Window.Current.Activate();
             });
         }
+
+        #endregion
+
+        #region All other members
 
         /// <summary>
         ///     Invoked when the application is launched normally by the end user.  Other entry points
@@ -51,5 +64,7 @@ namespace App
         {
             this._bootstrapper.Run(e);
         }
+
+        #endregion
     }
 }

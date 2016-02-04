@@ -1,6 +1,8 @@
 ﻿using System;
+
 using App.Models.Contracts;
 using App.ViewModels.Contracts;
+
 using WinRTXamlToolkit.Controls;
 using WinRTXamlToolkit.Interactivity;
 
@@ -8,6 +10,8 @@ namespace App.Behaviors
 {
     public class TreeViewBehavior : Behavior<TreeView>
     {
+        #region All other members
+
         protected override void OnLoaded()
         {
             base.OnLoaded();
@@ -35,5 +39,7 @@ namespace App.Behaviors
 
             return newTreeViewItem;
         }
+
+        #endregion
     }
 }

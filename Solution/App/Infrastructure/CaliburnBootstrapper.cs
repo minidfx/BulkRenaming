@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Windows.ApplicationModel.Activation;
+
 using Caliburn.Micro;
+
 using Microsoft.Practices.Unity;
+
 using Action = System.Action;
 
 namespace App.Infrastructure
 {
     public class CaliburnBootstrapper : UnityBootstrapper
     {
+        #region Fields
+
         private readonly Action _createWindow;
+
+        #endregion
+
+        #region Constructors
 
         public CaliburnBootstrapper(Action createWindow)
         {
             this._createWindow = createWindow;
         }
+
+        #endregion
+
+        #region All other members
 
         protected override void Configure()
         {
@@ -70,5 +84,7 @@ namespace App.Infrastructure
         {
             this.UnityContainer.BuildUp(o.GetType(), o);
         }
+
+        #endregion
     }
 }

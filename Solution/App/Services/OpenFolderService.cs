@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using Windows.Storage;
 using Windows.Storage.Pickers;
+
 using App.Services.Contracts;
 
 namespace App.Services
 {
     public class OpenFolderService : IOpenFolderService
     {
+        #region Interface Implementations
+
         public async Task<StorageFolder> PromptAsync()
         {
             var folderPicker = new FolderPicker
@@ -19,5 +23,7 @@ namespace App.Services
 
             return await folderPicker.PickSingleFolderAsync();
         }
+
+        #endregion
     }
 }

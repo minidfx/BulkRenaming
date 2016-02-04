@@ -2,21 +2,33 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Windows.Storage;
+
 using App.Models;
 using App.Models.Contracts;
 using App.Services.Contracts;
 using App.ViewModels.Contracts;
+
 using Caliburn.Micro;
+
 using Microsoft.Practices.ServiceLocation;
 
 namespace App.ViewModels
 {
     public sealed class ShellViewModel : Screen, IShellViewModel
     {
+        #region Fields
+
         private IOpenFolderService _openFolderService;
+
         private string _pattern;
+
         private string _replacePattern;
+
+        #endregion
+
+        #region Properties, Indexers
 
         public string Pattern
         {
@@ -39,7 +51,12 @@ namespace App.ViewModels
         }
 
         public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
+
         public StorageFolder FolderSelected { get; private set; }
+
+        #endregion
+
+        #region Interface Implementations
 
         public void InitShell()
         {
@@ -60,6 +77,10 @@ namespace App.ViewModels
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region All other members
 
         protected override void OnViewLoaded(object view)
         {
@@ -87,5 +108,7 @@ namespace App.ViewModels
                 this.Files.Add(new ListViewModel(entry.Name, new Uri(entry.Path)));
             }
         }
+
+        #endregion
     }
 }
