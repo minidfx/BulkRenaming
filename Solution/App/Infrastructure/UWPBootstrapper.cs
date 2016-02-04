@@ -18,8 +18,9 @@ namespace App.Infrastructure
         {
             base.Configure();
 
-            this.UnityContainer.RegisterType<IOpenFolderService, OpenFolderService>();
-            this.UnityContainer.RegisterType<IShellViewModel, ShellViewModel>();
+            this.UnityContainer
+                .RegisterType<IOpenFolderService, OpenFolderService>()
+                .RegisterType<IShellViewModel, ShellViewModel>();
         }
 
         public override void Dispose()
