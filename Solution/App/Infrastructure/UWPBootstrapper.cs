@@ -1,4 +1,6 @@
 ﻿using System;
+using App.Services;
+using App.Services.Contracts;
 using App.ViewModels;
 using App.ViewModels.Contracts;
 using Microsoft.Practices.Unity;
@@ -16,6 +18,7 @@ namespace App.Infrastructure
         {
             base.Configure();
 
+            this.UnityContainer.RegisterType<IOpenFolderService, OpenFolderService>();
             this.UnityContainer.RegisterType<IShellViewModel, ShellViewModel>();
         }
 

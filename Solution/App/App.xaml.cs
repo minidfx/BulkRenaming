@@ -1,6 +1,9 @@
 ﻿using Windows.ApplicationModel.Activation;
+using Windows.UI.Xaml;
 using App.Infrastructure;
-using App.ViewModels;
+using App.ViewModels.Contracts;
+using Caliburn.Micro;
+using Microsoft.Practices.ServiceLocation;
 
 namespace App
 {
@@ -19,7 +22,22 @@ namespace App
         {
             this.InitializeComponent();
 
-            this._bootstrapper = new UWPBootstrapper(this.DisplayRootViewFor<ShellViewModel>);
+            this._bootstrapper = new UWPBootstrapper(() =>
+            {
+                this.Initialize();
+
+                var shellViewModel = ServiceLocator.Current.GetInstance<IShellViewModel>();
+                shellViewModel.InitShell();
+
+                var uiElement = (UIElement)ViewLocator.LocateForModel(shellViewModel, null, null);
+                ViewModelBinder.Bind(shellViewModel, uiElement, null);
+                var activate = shellViewModel as IActivate;
+
+                activate?.Activate();
+
+                Window.Current.Content = uiElement;
+                Window.Current.Activate();
+            });
         }
 
         /// <summary>
