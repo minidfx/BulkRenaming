@@ -47,12 +47,6 @@ namespace App.Infrastructure
             IoC.GetAllInstances += this.GetAllInstances;
 
             Coroutine.Completed += CoroutineOnCompleted;
-            ConventionManager.ApplyUpdateSourceTrigger = this.ApplyUpdateSourceTrigger;
-        }
-
-        private void ApplyUpdateSourceTrigger(DependencyProperty dependencyProperty, DependencyObject dependencyObject, Binding arg3, PropertyInfo arg4)
-        {
-            arg3.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
         }
 
         private static async void CoroutineOnCompleted(object sender,
