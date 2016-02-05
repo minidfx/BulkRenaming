@@ -3,8 +3,13 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:converters="using:App.Converters"
       mc:Ignorable="d">
 
+    <Page.Resources>
+        <converters:FuturResultConverter x:Key="FuturResultConverter" />
+    </Page.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -18,7 +23,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding FolderSelected}" />
+            <TextBlock Grid.Row="0" Text="{Binding FolderSelected.Path}" />
 
             <Button Grid.Column="1" Content="Browse ..." x:Name="BrowseAsync" />
         </Grid>
@@ -26,7 +31,11 @@
         <ListView Grid.Row="1" ItemsSource="{Binding Files}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock
+                            Text="{Binding RegexResult.FuturResult, Converter={StaticResource FuturResultConverter}}" />
+                    </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
@@ -38,8 +47,8 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <TextBox x:Name="Pattern" />
-                <TextBox x:Name="ReplacePattern" />
+                <TextBox Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
             <Button Grid.Column="1" Content="Apply" x:Name="ApplyAsync" />

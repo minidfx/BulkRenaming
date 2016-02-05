@@ -95,19 +95,24 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Behaviors\ApplyRegexListViewBehavior.cs" />
     <Compile Include="Behaviors\TreeViewBehavior.cs" />
+    <Compile Include="Converters\FuturResultConverter.cs" />
+    <Compile Include="Extensions\PropertyChangedEventArgsExtension.cs" />
     <Compile Include="Infrastructure\BootstrapperBase.cs" />
     <Compile Include="Infrastructure\CaliburnBootstrapper.cs" />
     <Compile Include="Infrastructure\UnityBootstrapper.cs" />
     <Compile Include="Infrastructure\UWPBootstrapper.cs" />
-    <Compile Include="Models\Contracts\ITreeItemModel.cs" />
     <Compile Include="Models\Contracts\IListViewModel.cs" />
+    <Compile Include="Models\Contracts\ITreeItemModel.cs" />
     <Compile Include="Models\ListViewModel.cs" />
     <Compile Include="Models\TreeItemModel.cs" />
     <Compile Include="Services\Contracts\IOpenFolderService.cs" />
     <Compile Include="Services\OpenFolderService.cs" />
+    <Compile Include="ViewModels\Contracts\IResultViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IShellViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ITreeViewModel.cs" />
+    <Compile Include="ViewModels\ResultViewViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>

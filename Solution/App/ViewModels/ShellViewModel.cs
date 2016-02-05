@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Windows.Storage;
@@ -14,45 +18,37 @@ using Caliburn.Micro;
 
 using Microsoft.Practices.ServiceLocation;
 
+using Reactive.Bindings;
+
 namespace App.ViewModels
 {
     public sealed class ShellViewModel : Screen, IShellViewModel
     {
         #region Fields
 
+        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+
         private IOpenFolderService _openFolderService;
-
-        private string _pattern;
-
-        private string _replacePattern;
 
         #endregion
 
         #region Properties, Indexers
 
-        public string Pattern
-        {
-            get { return this._pattern; }
-            set
-            {
-                UpdatePattern(value);
-                this._pattern = value;
-            }
-        }
+        public ReactiveProperty<string> Pattern { get; set; } = new ReactiveProperty<string>().Where(x => x != null)
+                                                                                              .Throttle(TimeSpan.FromMilliseconds(500))
+                                                                                              .ToReactiveProperty();
 
-        public string ReplacePattern
-        {
-            get { return this._replacePattern; }
-            set
-            {
-                UpdateReplacePattern(value);
-                this._replacePattern = value;
-            }
-        }
+        public ReactiveProperty<string> ReplacePattern { get; set; } = new ReactiveProperty<string>().Where(x => x != null)
+                                                                                                     .Throttle(TimeSpan.FromMilliseconds(500))
+                                                                                                     .ToReactiveProperty();
 
         public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
 
         public StorageFolder FolderSelected { get; private set; }
+
+        public string PatternFound { get; set; }
+
+        public string ReplacePatternFound { get; set; }
 
         #endregion
 
@@ -77,21 +73,78 @@ namespace App.ViewModels
 
         #region All other members
 
-        protected override void OnViewLoaded(object view)
+        /// <summary>
+        ///     Called when initializing.
+        /// </summary>
+        protected override void OnInitialize()
         {
-            base.OnViewLoaded(view);
+            base.OnInitialize();
 
-            this.NotifyOfPropertyChange(() => this.FolderSelected);
+            this._openFolderService = ServiceLocator.Current.GetInstance<IOpenFolderService>();
         }
 
-        private static void UpdatePattern(string value)
+        /// <summary>
+        ///     Called when activating.
+        /// </summary>
+        protected override void OnActivate()
         {
-            throw new NotImplementedException();
+            base.OnActivate();
+
+            this._disposables.Add(this.Pattern
+                                      .Do(pattern => this.CaculateRegex(pattern, this.ReplacePattern.Value))
+                                      .Merge(this.ReplacePattern
+                                                 .Do(replacePattern => this.CaculateRegex(this.Pattern.Value, replacePattern)))
+                                      .SubscribeOn(TaskPoolScheduler.Default)
+                                      .ObserveOn(UIDispatcherScheduler.Default)
+                                      .Subscribe());
         }
 
-        private static void UpdateReplacePattern(string value)
+        private void CaculateRegex(string pattern, string replacePattern)
         {
-            throw new NotImplementedException();
+            if (pattern == null || replacePattern == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var regex = new Regex(pattern);
+
+                foreach (var file in this.Files)
+                {
+                    var match = regex.Match(file.Name);
+                    if (match.Success)
+                    {
+                        file.RegexResult.Result = match.Value;
+                        file.RegexResult.FuturResult = match.Result(replacePattern);
+                    }
+                    else
+                    {
+                        file.RegexResult.Result = file.Name;
+                        file.RegexResult.FuturResult = string.Empty;
+                    }
+                }
+            }
+            catch (ArgumentException)
+            {
+            }
+        }
+
+        /// <summary>
+        ///     Called when deactivating.
+        /// </summary>
+        /// <param name="close">Inidicates whether this instance will be closed.</param>
+        protected override void OnDeactivate(bool close)
+        {
+            base.OnDeactivate(close);
+
+            this._disposables.Dispose();
+
+            if (close)
+            {
+                this.Pattern.Dispose();
+                this.ReplacePattern.Dispose();
+            }
         }
 
         private async Task FetchFolderAsync()

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Activation;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Data;
 
 using Caliburn.Micro;
 
@@ -44,6 +47,12 @@ namespace App.Infrastructure
             IoC.GetAllInstances += this.GetAllInstances;
 
             Coroutine.Completed += CoroutineOnCompleted;
+            ConventionManager.ApplyUpdateSourceTrigger = this.ApplyUpdateSourceTrigger;
+        }
+
+        private void ApplyUpdateSourceTrigger(DependencyProperty dependencyProperty, DependencyObject dependencyObject, Binding arg3, PropertyInfo arg4)
+        {
+            arg3.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
         }
 
         private static async void CoroutineOnCompleted(object sender,

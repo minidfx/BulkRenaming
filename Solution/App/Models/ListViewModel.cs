@@ -1,10 +1,14 @@
 ﻿using System;
 
 using App.Models.Contracts;
+using App.ViewModels;
+using App.ViewModels.Contracts;
+
+using Caliburn.Micro;
 
 namespace App.Models
 {
-    public class ListViewModel : IListViewModel
+    public class ListViewModel : ViewAware, IListViewModel
     {
         #region Constructors
 
@@ -12,6 +16,8 @@ namespace App.Models
         {
             this.Name = name;
             this.Path = path;
+
+            this.RegexResult = new ResultViewViewModel {Result = name};
         }
 
         #endregion
@@ -21,6 +27,8 @@ namespace App.Models
         public string Name { get; }
 
         public Uri Path { get; }
+
+        public IResultViewModel RegexResult { get; set; }
 
         #endregion
     }
