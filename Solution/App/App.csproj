@@ -95,7 +95,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Behaviors\ApplyRegexListViewBehavior.cs" />
     <Compile Include="Behaviors\TreeViewBehavior.cs" />
     <Compile Include="Converters\FuturResultConverter.cs" />
     <Compile Include="Extensions\PropertyChangedEventArgsExtension.cs" />
