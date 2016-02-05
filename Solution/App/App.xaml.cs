@@ -36,7 +36,6 @@ namespace App
                 this.Initialize();
 
                 var shellViewModel = ServiceLocator.Current.GetInstance<IShellViewModel>();
-                shellViewModel.InitShell();
 
                 var uiElement = ViewLocator.LocateForModel(shellViewModel, null, null);
                 ViewModelBinder.Bind(shellViewModel, uiElement, null);

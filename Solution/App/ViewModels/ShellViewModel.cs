@@ -73,11 +73,6 @@ namespace App.ViewModels
             this.NotifyOfPropertyChange(() => this.FolderSelected);
         }
 
-        public void InitShell()
-        {
-            this._openFolderService = ServiceLocator.Current.GetInstance<IOpenFolderService>();
-        }
-
         #endregion
 
         #region All other members
