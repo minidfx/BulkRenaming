@@ -97,7 +97,6 @@
     </Compile>
     <Compile Include="Behaviors\RegexColorBehavior.cs" />
     <Compile Include="Behaviors\TreeViewBehavior.cs" />
-    <Compile Include="Converters\FuturResultConverter.cs" />
     <Compile Include="Extensions\PropertyChangedEventArgsExtension.cs" />
     <Compile Include="Infrastructure\BootstrapperBase.cs" />
     <Compile Include="Infrastructure\CaliburnBootstrapper.cs" />

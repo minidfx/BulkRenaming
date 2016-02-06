@@ -3,15 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:converters="using:App.Converters"
       xmlns:behaviors="using:App.Behaviors"
-      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       mc:Ignorable="d">
-
-    <Page.Resources>
-        <converters:FuturResultConverter x:Key="FuturResultConverter" />
-        <converters:ResultConverter x:Key="ResultConverter" />
-    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>

@@ -78,7 +78,7 @@ namespace App.Behaviors
                     var runs = new Stack<Run>();
                     var originalPartLength = (uint) indexOf - startPosition;
                     var originalPart = originalText.Substring((int) startPosition, (int) originalPartLength);
-                    var partLength = (uint)part.Length;
+                    var partLength = (uint) part.Length;
                     var nextStartPosition = originalPartLength + partLength;
 
                     runs.Push(new Run
