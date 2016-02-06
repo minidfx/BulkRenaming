@@ -17,7 +17,7 @@ namespace App.Models
             this.Name = name;
             this.Path = path;
 
-            this.RegexResult = new ResultViewViewModel {Result = name};
+            this.RegexResult = new ResultViewViewModel();
         }
 
         #endregion

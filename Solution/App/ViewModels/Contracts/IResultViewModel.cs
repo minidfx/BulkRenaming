@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace App.ViewModels.Contracts
 {
@@ -6,7 +7,7 @@ namespace App.ViewModels.Contracts
     {
         #region Properties, Indexers
 
-        string Result { get; set; }
+        IEnumerable<string> Result { get; set; }
 
         string FuturResult { get; set; }
 

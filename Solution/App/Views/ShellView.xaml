@@ -4,12 +4,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:converters="using:App.Converters"
+      xmlns:behaviors="using:App.Behaviors"
+      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
       mc:Ignorable="d">
 
     <Page.Resources>
         <converters:FuturResultConverter x:Key="FuturResultConverter" />
+        <converters:ResultConverter x:Key="ResultConverter" />
     </Page.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -32,9 +35,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Name}" />
-                        <TextBlock
-                            Text="{Binding RegexResult.FuturResult, Converter={StaticResource FuturResultConverter}}" />
+                        <RichTextBlock behaviors:RegexColorBehavior.FileName="{Binding Name}"
+                                       behaviors:RegexColorBehavior.Result="{Binding RegexResult.Result}"
+                                       behaviors:RegexColorBehavior.FuturResult="{Binding RegexResult.FuturResult}" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

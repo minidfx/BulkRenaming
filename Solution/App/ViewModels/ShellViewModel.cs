@@ -20,6 +20,8 @@ using Microsoft.Practices.ServiceLocation;
 
 using Reactive.Bindings;
 
+using WinRTXamlToolkit.Tools;
+
 namespace App.ViewModels
 {
     public sealed class ShellViewModel : Screen, IShellViewModel
@@ -115,18 +117,25 @@ namespace App.ViewModels
                     var match = regex.Match(file.Name);
                     if (match.Success)
                     {
-                        file.RegexResult.Result = match.Value;
+                        file.RegexResult.Result = match.Groups.Cast<Group>().Skip(1).Select(x => x.Value);
                         file.RegexResult.FuturResult = match.Result(replacePattern);
                     }
                     else
                     {
-                        file.RegexResult.Result = file.Name;
+                        file.RegexResult.Result = Enumerable.Empty<string>();
                         file.RegexResult.FuturResult = string.Empty;
                     }
                 }
             }
             catch (ArgumentException)
             {
+                this.Files.ForEach(x =>
+                {
+                    var regexResult = x.RegexResult;
+
+                    regexResult.Result = Enumerable.Empty<string>();
+                    regexResult.FuturResult = string.Empty;
+                });
             }
         }
 
