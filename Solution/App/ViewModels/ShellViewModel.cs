@@ -69,6 +69,7 @@ namespace App.ViewModels
             await this.FetchFolderAsync();
 
             this.NotifyOfPropertyChange(() => this.FolderSelected);
+            await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
         }
 
         #endregion

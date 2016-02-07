@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Windows.UI;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -35,6 +36,29 @@ namespace App.Behaviors
 
         #region All other members
 
+        private static Run CreateRun(string text)
+        {
+            return new Run
+                   {
+                       Text = text
+                   };
+        }
+
+        private static Run CreateRun(string text, Brush foreground, FontWeight fontWeight)
+        {
+            return new Run
+                   {
+                       Text = text,
+                       Foreground = foreground,
+                       FontWeight = fontWeight
+                   };
+        }
+
+        private static Run CloneRun(Run x)
+        {
+            return CreateRun(x.Text, x.Foreground, x.FontWeight);
+        }
+
         private static void FuturResultPropertyChangedCallback(DependencyObject dependencyObject,
                                                                DependencyPropertyChangedEventArgs e)
         {
@@ -49,11 +73,7 @@ namespace App.Behaviors
             var paragraph = richTextBlock.Blocks.OfType<Paragraph>().Single();
 
             // Filter and create new run blocks with its configurations
-            var runs = paragraph.Inlines.OfType<Run>().Select(x => new Run
-                                                                   {
-                                                                       Text = x.Text,
-                                                                       Foreground = x.Foreground
-                                                                   }).ToList();
+            var runs = paragraph.Inlines.OfType<Run>().Select(CloneRun).ToList();
 
             // Clear old previous run blocks
             richTextBlock.Blocks.Clear();
@@ -103,24 +123,19 @@ namespace App.Behaviors
 
             foreach (var part in resultParts)
             {
-                var indexOf = originalText.IndexOf(part, StringComparison.Ordinal);
+                var indexOf = originalText.IndexOf(part, (int) startPosition, StringComparison.Ordinal);
                 if (indexOf != -1)
                 {
                     var runs = new Stack<Run>();
-                    var originalPartLength = (uint) indexOf - startPosition;
+
+                    var originalPartLength = indexOf - startPosition;
+
                     var originalPart = originalText.Substring((int) startPosition, (int) originalPartLength);
                     var partLength = (uint) part.Length;
-                    var nextStartPosition = originalPartLength + partLength;
+                    var nextStartPosition = (uint) originalPartLength + partLength;
 
-                    runs.Push(new Run
-                              {
-                                  Text = part,
-                                  Foreground = new SolidColorBrush(Colors.Red)
-                              });
-                    runs.Push(new Run
-                              {
-                                  Text = originalPart
-                              });
+                    runs.Push(CreateRun(part, new SolidColorBrush(Colors.Red), FontWeights.Bold));
+                    runs.Push(CreateRun(originalPart));
 
                     while (runs.Any())
                     {
