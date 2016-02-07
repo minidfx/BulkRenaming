@@ -19,11 +19,7 @@ namespace App.ViewModels.Contracts
 
         ObservableCollection<IListViewModel> Files { get; }
 
-        StorageFolder FolderSelected { get; }
-
-        string PatternFound { get; }
-
-        string ReplacePatternFound { get; }
+        string FolderSelected { get; }
 
         #endregion
 

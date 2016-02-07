@@ -30,6 +30,8 @@ namespace App.ViewModels
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
+        private StorageFolder _folderSelected;
+
         private IOpenFolderService _openFolderService;
 
         #endregion
@@ -46,11 +48,7 @@ namespace App.ViewModels
 
         public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
 
-        public StorageFolder FolderSelected { get; private set; }
-
-        public string PatternFound { get; set; }
-
-        public string ReplacePatternFound { get; set; }
+        public string FolderSelected => this._folderSelected?.Path;
 
         #endregion
 
@@ -63,12 +61,17 @@ namespace App.ViewModels
 
         public async Task BrowseAsync()
         {
-            this.FolderSelected = await this._openFolderService.PromptAsync();
+            this._folderSelected = await this._openFolderService.PromptAsync();
+
+            if (this._folderSelected == null)
+            {
+                return;
+            }
 
             this.Files.Clear();
             await this.FetchFolderAsync();
 
-            this.NotifyOfPropertyChange(() => this.FolderSelected);
+            this.NotifyOfPropertyChange(() => this._folderSelected);
             await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
         }
 
@@ -159,7 +162,7 @@ namespace App.ViewModels
 
         private async Task FetchFolderAsync()
         {
-            var entries = await this.FolderSelected.GetFilesAsync();
+            var entries = await this._folderSelected.GetFilesAsync();
 
             foreach (var entry in entries.Select(entry => new {entry.Name, entry.Path}))
             {
