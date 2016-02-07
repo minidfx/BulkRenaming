@@ -39,6 +39,37 @@ namespace App.Behaviors
                                                                DependencyPropertyChangedEventArgs e)
         {
             var richTextBlock = (RichTextBlock) dependencyObject;
+            var futurResult = (string) e.NewValue;
+
+            if (string.IsNullOrEmpty(futurResult))
+            {
+                return;
+            }
+
+            var paragraph = richTextBlock.Blocks.OfType<Paragraph>().Single();
+
+            // Filter and create new run blocks with its configurations
+            var runs = paragraph.Inlines.OfType<Run>().Select(x => new Run
+                                                                   {
+                                                                       Text = x.Text,
+                                                                       Foreground = x.Foreground
+                                                                   }).ToList();
+
+            // Clear old previous run blocks
+            richTextBlock.Blocks.Clear();
+
+            // Create a new paragrah with its blocks
+            var newParagraph = new Paragraph();
+            runs.ForEach(x => newParagraph.Inlines.Add(x));
+
+            // Add the custom block containing the regex result
+            newParagraph.Inlines.Add(new Span
+                                     {
+                                         Inlines = {new Run {Text = futurResult}},
+                                         Foreground = new SolidColorBrush(Colors.Green)
+                                     });
+
+            richTextBlock.Blocks.Add(newParagraph);
         }
 
         private static void ResultPropertyChangedCallback(DependencyObject dependencyObject,
