@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Windows.UI;
@@ -28,9 +27,9 @@ namespace App.Behaviors
                                                                                                             new PropertyMetadata(default(string), FuturResultPropertyChangedCallback));
 
         public static readonly DependencyProperty ResultProperty = DependencyProperty.RegisterAttached("Result",
-                                                                                                       typeof (IEnumerable<string>),
+                                                                                                       typeof (string),
                                                                                                        typeof (RegexColorBehavior),
-                                                                                                       new PropertyMetadata(default(IEnumerable<string>), ResultPropertyChangedCallback));
+                                                                                                       new PropertyMetadata(default(string), ResultPropertyChangedCallback));
 
         #endregion
 
@@ -105,60 +104,24 @@ namespace App.Behaviors
 
             richTextBlock.Blocks.Clear();
 
-            var originalTextLength = originalText.Length;
-            var resultParts = GetResult(dependencyObject).ToArray();
-
+            var result = GetResult(dependencyObject);
             var newParagraph = new Paragraph();
 
-            if (!resultParts.Any())
+            if (result == null)
             {
-                newParagraph.Inlines.Add(new Run {Text = originalText});
+                newParagraph.Inlines.Add(CreateRun(originalText));
                 richTextBlock.Blocks.Add(newParagraph);
 
                 return;
             }
 
-            // The position for splitting the string
-            uint startPosition = 0;
-
-            foreach (var part in resultParts)
+            var indexOf = originalText.IndexOf(result, StringComparison.Ordinal);
+            if (indexOf != -1)
             {
-                var indexOf = originalText.IndexOf(part, (int) startPosition, StringComparison.Ordinal);
-                if (indexOf != -1)
-                {
-                    var runs = new Stack<Run>();
-
-                    var originalPartLength = indexOf - startPosition;
-
-                    var originalPart = originalText.Substring((int) startPosition, (int) originalPartLength);
-                    var partLength = (uint) part.Length;
-                    var nextStartPosition = (uint) originalPartLength + partLength;
-
-                    runs.Push(CreateRun(part, new SolidColorBrush(Colors.Red), FontWeights.Bold));
-                    runs.Push(CreateRun(originalPart));
-
-                    while (runs.Any())
-                    {
-                        var run = runs.Pop();
-
-                        newParagraph.Inlines.Add(run);
-                    }
-
-                    startPosition += nextStartPosition;
-                }
+                newParagraph.Inlines.Add(CreateRun(originalText.Substring(0, indexOf)));
+                newParagraph.Inlines.Add(CreateRun(originalText.Substring(indexOf, result.Length), new SolidColorBrush(Colors.Red), FontWeights.Bold));
+                newParagraph.Inlines.Add(CreateRun(originalText.Substring(indexOf + result.Length)));
             }
-
-            // Add the rest of the string
-            newParagraph.Inlines.Add(new Run
-                                     {
-                                         Text = originalText.Substring((int) startPosition)
-                                     });
-
-            newParagraph.Inlines.Add(new Run
-                                     {
-                                         Text = originalText.Substring(originalTextLength),
-                                         Foreground = new SolidColorBrush(Colors.Green)
-                                     });
 
             richTextBlock.Blocks.Add(newParagraph);
         }
@@ -192,14 +155,14 @@ namespace App.Behaviors
             return (string) element.GetValue(FuturResultProperty);
         }
 
-        public static void SetResult(DependencyObject element, IEnumerable<string> value)
+        public static void SetResult(DependencyObject element, string value)
         {
             element.SetValue(ResultProperty, value);
         }
 
-        public static IEnumerable<string> GetResult(DependencyObject element)
+        public static string GetResult(DependencyObject element)
         {
-            return (IEnumerable<string>) element.GetValue(ResultProperty);
+            return (string) element.GetValue(ResultProperty);
         }
 
         public static string GetFileName(DependencyObject obj)

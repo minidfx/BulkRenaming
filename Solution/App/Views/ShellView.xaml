@@ -22,10 +22,12 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding FolderSelected.Path}"
-                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Text="{Binding FolderSelected}"
+                       VerticalAlignment="Center" />
 
-            <Button Grid.Column="1" Content="Browse ..." x:Name="BrowseAsync" />
+            <Button Grid.Column="1" x:Name="BrowseAsync">
+                <SymbolIcon Symbol="OpenLocal" />
+            </Button>
         </Grid>
 
         <Border Grid.Row="1" BorderThickness="0 1 0 1" BorderBrush="{ThemeResource TextBoxBorderThemeBrush}">
@@ -49,12 +51,16 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
-                <TextBox Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0 0 0 10" />
-                <TextBox Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <controls:WatermarkTextBox WatermarkText="Pattern" 
+                                           Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           Margin="0 0 0 10"/>
+                <controls:WatermarkTextBox WatermarkText="Replace pattern"
+                                           Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
 
-            <Button Grid.Column="1" Content="Apply" x:Name="ApplyAsync" Margin="0 0 10 0" />
+            <Button Grid.Column="1" x:Name="ApplyAsync" Margin="0 0 10 0">
+                <SymbolIcon Symbol="Accept" />
+            </Button>
         </Grid>
 
         <controls:CustomAppBar Grid.Row="3" />

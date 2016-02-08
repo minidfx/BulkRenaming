@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using App.ViewModels.Contracts;
+﻿using App.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
@@ -13,13 +10,13 @@ namespace App.ViewModels
 
         private string _futurResult;
 
-        private IEnumerable<string> _result = Enumerable.Empty<string>();
+        private string _result;
 
         #endregion
 
         #region Properties, Indexers
 
-        public IEnumerable<string> Result
+        public string Result
         {
             get { return this._result; }
             set

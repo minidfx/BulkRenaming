@@ -121,12 +121,12 @@ namespace App.ViewModels
                     var match = regex.Match(file.Name);
                     if (match.Success)
                     {
-                        file.RegexResult.Result = match.Groups.Cast<Group>().Skip(1).Select(x => x.Value);
+                        file.RegexResult.Result = match.Value;
                         file.RegexResult.FuturResult = match.Result(replacePattern);
                     }
                     else
                     {
-                        file.RegexResult.Result = Enumerable.Empty<string>();
+                        file.RegexResult.Result = null;
                         file.RegexResult.FuturResult = string.Empty;
                     }
                 }
@@ -137,7 +137,7 @@ namespace App.ViewModels
                 {
                     var regexResult = x.RegexResult;
 
-                    regexResult.Result = Enumerable.Empty<string>();
+                    regexResult.Result = null;
                     regexResult.FuturResult = string.Empty;
                 });
             }
