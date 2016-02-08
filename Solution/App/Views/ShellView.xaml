@@ -36,8 +36,10 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <RichTextBlock behaviors:RegexColorBehavior.FileName="{Binding Name}"
-                                           behaviors:RegexColorBehavior.Result="{Binding RegexResult.Result}"
-                                           behaviors:RegexColorBehavior.FuturResult="{Binding RegexResult.FuturResult}" />
+                                           behaviors:RegexColorBehavior.Result="{Binding RegexResult.Result}" />
+                            <TextBlock Text="{Binding RegexResult.FuturResult}"
+                                       Margin="10 0 0 0"
+                                       Foreground="Green" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -51,11 +53,11 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
-                <controls:WatermarkTextBox WatermarkText="Pattern" 
+                <controls:WatermarkTextBox WatermarkText="Pattern"
                                            Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                           Margin="0 0 0 10"/>
+                                           Margin="0 0 0 10" />
                 <controls:WatermarkTextBox WatermarkText="Replace pattern"
-                                           Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                           Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
             <Button Grid.Column="1" x:Name="ApplyAsync" Margin="0 0 10 0">

@@ -71,7 +71,7 @@ namespace App.ViewModels
             this.Files.Clear();
             await this.FetchFolderAsync();
 
-            this.NotifyOfPropertyChange(() => this._folderSelected);
+            this.NotifyOfPropertyChange(() => this.FolderSelected);
             await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
         }
 
