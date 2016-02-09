@@ -55,20 +55,21 @@
                                     Margin="3" />
                             </Border>
 
-                            <Border Background="Green"
-                                    Visibility="{Binding FuturResult, Converter={StaticResource NullVisibilityConverter}}"
-                                    VerticalAlignment="Center"
-                                    CornerRadius="2">
-                                <TextBlock Text="{Binding FuturResult}"
-                                           Foreground="AntiqueWhite"
-                                           Margin="3" />
-                            </Border>
-
                             <Border
                                 Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=2}"
                                 VerticalAlignment="Center">
                                 <TextBlock
                                     Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=2}" />
+                            </Border>
+
+                            <Border Background="Green"
+                                    Visibility="{Binding FuturResult, Converter={StaticResource NullVisibilityConverter}}"
+                                    VerticalAlignment="Center"
+                                    CornerRadius="2"
+                                    Margin="10 0 0 0">
+                                <TextBlock Text="{Binding FuturResult}"
+                                           Foreground="AntiqueWhite"
+                                           Margin="3" />
                             </Border>
                         </StackPanel>
                     </DataTemplate>
