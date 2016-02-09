@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -36,13 +36,22 @@ namespace App.ViewModels
 
         #endregion
 
+        #region Constructors
+
+        public ShellViewModel()
+        {
+            this.Files = Enumerable.Empty<IListViewModel>();
+        }
+
+        #endregion
+
         #region Properties, Indexers
 
         public ReactiveProperty<string> Pattern { get; set; } = new ReactiveProperty<string>().ToReactiveProperty();
 
         public ReactiveProperty<string> ReplacePattern { get; set; } = new ReactiveProperty<string>().ToReactiveProperty();
 
-        public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
+        public IEnumerable<IListViewModel> Files { get; private set; }
 
         public string FolderSelected => this._folderSelected?.Path;
 
@@ -50,9 +59,15 @@ namespace App.ViewModels
 
         #region Interface Implementations
 
-        public Task ApplyAsync()
+        public async Task ApplyAsync()
         {
-            throw new NotImplementedException();
+            foreach (var file in this.Files.Where(x => x.FuturResult != null))
+            {
+                await file.StorageFile.RenameAsync(file.FuturResult);
+            }
+
+            await this.FetchFolderAsync();
+            await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
         }
 
         public async Task BrowseAsync()
@@ -64,7 +79,6 @@ namespace App.ViewModels
                 return;
             }
 
-            this.Files.Clear();
             await this.FetchFolderAsync();
 
             this.NotifyOfPropertyChange(() => this.FolderSelected);
@@ -190,11 +204,15 @@ namespace App.ViewModels
         private async Task FetchFolderAsync()
         {
             var entries = await this._folderSelected.GetFilesAsync();
+            var files = new LinkedList<IListViewModel>();
 
-            foreach (var fileName in entries.Select(entry => entry.Name))
+            foreach (var entry in entries)
             {
-                this.Files.Add(new ListViewModel(fileName, new[] {fileName}));
+                files.AddLast(new ListViewModel(entry.Name, entry));
             }
+
+            this.Files = files;
+            this.NotifyOfPropertyChange(() => this.Files);
         }
 
         #endregion

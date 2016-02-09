@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Windows.Storage;
+
 using App.Models.Contracts;
 
 using Caliburn.Micro;
@@ -22,10 +24,11 @@ namespace App.Models
 
         #region Constructors
 
-        public ListViewModel(string fileName, IEnumerable<string> parts)
+        public ListViewModel(string fileName, StorageFile storageFile)
         {
             this.FileName = fileName;
-            this.Parts = parts;
+            this.Parts = new[] {fileName};
+            this.StorageFile = storageFile;
         }
 
         #endregion
@@ -41,6 +44,8 @@ namespace App.Models
                 this.NotifyOfPropertyChange(() => this.FileName);
             }
         }
+
+        public StorageFile StorageFile { get; set; }
 
         public string FuturResult
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 using Windows.Storage;
@@ -17,7 +18,7 @@ namespace App.ViewModels.Contracts
 
         ReactiveProperty<string> ReplacePattern { get; set; }
 
-        ObservableCollection<IListViewModel> Files { get; }
+        IEnumerable<IListViewModel> Files { get; }
 
         string FolderSelected { get; }
 

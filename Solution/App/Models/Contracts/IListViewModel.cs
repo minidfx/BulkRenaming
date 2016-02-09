@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Windows.Storage;
+
 namespace App.Models.Contracts
 {
     public interface IListViewModel
@@ -13,6 +15,8 @@ namespace App.Models.Contracts
         string FileName { get; set; }
 
         bool Success { get; set; }
+
+        StorageFile StorageFile { get; set; }
 
         #endregion
     }
