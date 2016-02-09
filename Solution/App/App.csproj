@@ -95,8 +95,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Behaviors\RegexColorBehavior.cs" />
     <Compile Include="Behaviors\TreeViewBehavior.cs" />
+    <Compile Include="Converters\DisplayPartConverter.cs" />
+    <Compile Include="Converters\GetArrayValueConverter.cs" />
+    <Compile Include="Converters\NullVisibilityConverter.cs" />
     <Compile Include="Extensions\PropertyChangedEventArgsExtension.cs" />
     <Compile Include="Infrastructure\BootstrapperBase.cs" />
     <Compile Include="Infrastructure\CaliburnBootstrapper.cs" />

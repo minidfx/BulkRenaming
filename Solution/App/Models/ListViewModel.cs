@@ -1,34 +1,76 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 using App.Models.Contracts;
-using App.ViewModels;
-using App.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
 namespace App.Models
 {
-    public class ListViewModel : ViewAware, IListViewModel
+    public sealed class ListViewModel : ViewAware, IListViewModel
     {
+        #region Fields
+
+        private string _fileName;
+
+        private string _futurResult;
+
+        private IEnumerable<string> _parts;
+
+        private bool _success;
+
+        #endregion
+
         #region Constructors
 
-        public ListViewModel(string name, Uri path)
+        public ListViewModel(string fileName, IEnumerable<string> parts)
         {
-            this.Name = name;
-            this.Path = path;
-
-            this.RegexResult = new ResultViewViewModel();
+            this.FileName = fileName;
+            this.Parts = parts;
         }
 
         #endregion
 
         #region Properties, Indexers
 
-        public string Name { get; }
+        public string FileName
+        {
+            get { return this._fileName; }
+            set
+            {
+                this._fileName = value;
+                this.NotifyOfPropertyChange(() => this.FileName);
+            }
+        }
 
-        public Uri Path { get; }
+        public string FuturResult
+        {
+            get { return this._futurResult; }
+            set
+            {
+                this._futurResult = value;
+                this.NotifyOfPropertyChange(() => this.FuturResult);
+            }
+        }
 
-        public IResultViewModel RegexResult { get; set; }
+        public IEnumerable<string> Parts
+        {
+            get { return this._parts; }
+            set
+            {
+                this._parts = value;
+                this.NotifyOfPropertyChange(() => this.Parts);
+            }
+        }
+
+        public bool Success
+        {
+            get { return this._success; }
+            set
+            {
+                this._success = value;
+                this.NotifyOfPropertyChange(() => this.Success);
+            }
+        }
 
         #endregion
     }

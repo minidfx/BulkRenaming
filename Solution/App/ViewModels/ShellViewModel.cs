@@ -38,13 +38,9 @@ namespace App.ViewModels
 
         #region Properties, Indexers
 
-        public ReactiveProperty<string> Pattern { get; set; } = new ReactiveProperty<string>().Where(x => x != null)
-                                                                                              .Throttle(TimeSpan.FromMilliseconds(500))
-                                                                                              .ToReactiveProperty();
+        public ReactiveProperty<string> Pattern { get; set; } = new ReactiveProperty<string>().ToReactiveProperty();
 
-        public ReactiveProperty<string> ReplacePattern { get; set; } = new ReactiveProperty<string>().Where(x => x != null)
-                                                                                                     .Throttle(TimeSpan.FromMilliseconds(500))
-                                                                                                     .ToReactiveProperty();
+        public ReactiveProperty<string> ReplacePattern { get; set; } = new ReactiveProperty<string>().ToReactiveProperty();
 
         public ObservableCollection<IListViewModel> Files { get; } = new ObservableCollection<IListViewModel>();
 
@@ -97,8 +93,12 @@ namespace App.ViewModels
             base.OnActivate();
 
             this._disposables.Add(this.Pattern
+                                      .Throttle(TimeSpan.FromMilliseconds(200))
+                                      .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
                                       .Do(pattern => this.CaculateRegex(pattern, this.ReplacePattern.Value))
                                       .Merge(this.ReplacePattern
+                                                 .Throttle(TimeSpan.FromMilliseconds(200))
+                                                 .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
                                                  .Do(replacePattern => this.CaculateRegex(this.Pattern.Value, replacePattern)))
                                       .SubscribeOn(TaskPoolScheduler.Default)
                                       .ObserveOn(UIDispatcherScheduler.Default)
@@ -107,27 +107,55 @@ namespace App.ViewModels
 
         private void CaculateRegex(string pattern, string replacePattern)
         {
-            if (pattern == null || replacePattern == null)
-            {
-                return;
-            }
-
             try
             {
+                if (pattern == null)
+                {
+                    foreach (var file in this.Files)
+                    {
+                        file.Parts = new[] {file.FileName};
+                        file.FuturResult = null;
+                        file.Success = false;
+                    }
+
+                    return;
+                }
+
                 var regex = new Regex(pattern);
 
                 foreach (var file in this.Files)
                 {
-                    var match = regex.Match(file.Name);
+                    var fileName = file.FileName;
+                    var match = regex.Match(fileName);
+
+                    file.Success = match.Success;
+
                     if (match.Success)
                     {
-                        file.RegexResult.Result = match.Value;
-                        file.RegexResult.FuturResult = match.Result(replacePattern);
+                        var patternIdentified = match.Value;
+                        var indexOf = file.FileName.IndexOf(patternIdentified, StringComparison.Ordinal);
+
+                        file.Parts = new[]
+                                     {
+                                         fileName.Substring(0, indexOf),
+                                         fileName.Substring(indexOf, patternIdentified.Length),
+                                         fileName.Substring(indexOf + patternIdentified.Length)
+                                     };
+
+                        if (replacePattern == null)
+                        {
+                            file.FuturResult = null;
+                            continue;
+                        }
+
+                        var result = match.Result(replacePattern);
+                        file.FuturResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
                     }
                     else
                     {
-                        file.RegexResult.Result = null;
-                        file.RegexResult.FuturResult = string.Empty;
+                        file.Parts = new[] {fileName};
+                        file.FuturResult = null;
+                        file.Success = false;
                     }
                 }
             }
@@ -135,10 +163,9 @@ namespace App.ViewModels
             {
                 this.Files.ForEach(x =>
                 {
-                    var regexResult = x.RegexResult;
-
-                    regexResult.Result = null;
-                    regexResult.FuturResult = string.Empty;
+                    x.Parts = new[] {x.FileName};
+                    x.FuturResult = null;
+                    x.Success = false;
                 });
             }
         }
@@ -164,9 +191,9 @@ namespace App.ViewModels
         {
             var entries = await this._folderSelected.GetFilesAsync();
 
-            foreach (var entry in entries.Select(entry => new {entry.Name, entry.Path}))
+            foreach (var fileName in entries.Select(entry => entry.Name))
             {
-                this.Files.Add(new ListViewModel(entry.Name, new Uri(entry.Path)));
+                this.Files.Add(new ListViewModel(fileName, new[] {fileName}));
             }
         }
 

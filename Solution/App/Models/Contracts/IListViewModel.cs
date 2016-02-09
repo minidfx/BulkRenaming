@@ -1,6 +1,4 @@
-﻿using System;
-
-using App.ViewModels.Contracts;
+﻿using System.Collections.Generic;
 
 namespace App.Models.Contracts
 {
@@ -8,11 +6,13 @@ namespace App.Models.Contracts
     {
         #region Properties, Indexers
 
-        string Name { get; }
+        string FuturResult { get; set; }
 
-        Uri Path { get; }
+        IEnumerable<string> Parts { get; set; }
 
-        IResultViewModel RegexResult { get; set; }
+        string FileName { get; set; }
+
+        bool Success { get; set; }
 
         #endregion
     }

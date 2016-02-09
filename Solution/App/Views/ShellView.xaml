@@ -3,9 +3,15 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:behaviors="using:App.Behaviors"
       xmlns:controls="using:WinRTXamlToolkit.Controls"
+      xmlns:converters="using:App.Converters"
       mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:DisplayPartConverter x:Key="DisplayPartConverter" />
+        <converters:GetArrayValueConverter x:Key="GetArrayValueConverter" />
+        <converters:NullVisibilityConverter x:Key="NullVisibilityConverter" />
+    </Page.Resources>
 
     <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
         <Grid.RowDefinitions>
@@ -35,11 +41,35 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <RichTextBlock behaviors:RegexColorBehavior.FileName="{Binding Name}"
-                                           behaviors:RegexColorBehavior.Result="{Binding RegexResult.Result}" />
-                            <TextBlock Text="{Binding RegexResult.FuturResult}"
-                                       Margin="10 0 0 0"
-                                       Foreground="Green" />
+                            <TextBlock
+                                Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=0}"
+                                VerticalAlignment="Center" />
+
+                            <Border Background="Crimson"
+                                    Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=1}"
+                                    VerticalAlignment="Center"
+                                    CornerRadius="2">
+                                <TextBlock
+                                    Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=1}"
+                                    Foreground="AntiqueWhite"
+                                    Margin="3" />
+                            </Border>
+
+                            <Border Background="Green"
+                                    Visibility="{Binding FuturResult, Converter={StaticResource NullVisibilityConverter}}"
+                                    VerticalAlignment="Center"
+                                    CornerRadius="2">
+                                <TextBlock Text="{Binding FuturResult}"
+                                           Foreground="AntiqueWhite"
+                                           Margin="3" />
+                            </Border>
+
+                            <Border
+                                Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=2}"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=2}" />
+                            </Border>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
