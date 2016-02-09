@@ -5,98 +5,116 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:controls="using:WinRTXamlToolkit.Controls"
       xmlns:converters="using:App.Converters"
+      xmlns:micro="using:Caliburn.Micro"
       mc:Ignorable="d">
 
     <Page.Resources>
         <converters:DisplayPartConverter x:Key="DisplayPartConverter" />
+        <micro:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:GetArrayValueConverter x:Key="GetArrayValueConverter" />
         <converters:NullVisibilityConverter x:Key="NullVisibilityConverter" />
     </Page.Resources>
 
-    <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding FolderSelected}"
-                       VerticalAlignment="Center" />
+                <TextBlock Grid.Row="0" Text="{Binding FolderSelected}"
+                           VerticalAlignment="Center" />
 
-            <Button Grid.Column="1" x:Name="BrowseAsync">
-                <SymbolIcon Symbol="OpenLocal" />
-            </Button>
+                <Button Grid.Column="1" x:Name="BrowseAsync">
+                    <SymbolIcon Symbol="OpenLocal" />
+                </Button>
+            </Grid>
+
+            <Border Grid.Row="1" BorderThickness="0 1 0 1" BorderBrush="{ThemeResource TextBoxBorderThemeBrush}">
+                <ListView ItemsSource="{Binding Files}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=0}"
+                                    VerticalAlignment="Center" />
+
+                                <Border Background="Crimson"
+                                        Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=1}"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="2">
+                                    <TextBlock
+                                        Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=1}"
+                                        Foreground="AntiqueWhite"
+                                        Margin="3" />
+                                </Border>
+
+                                <Border
+                                    Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=2}"
+                                    VerticalAlignment="Center">
+                                    <TextBlock
+                                        Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=2}" />
+                                </Border>
+
+                                <Border Background="Green"
+                                        Visibility="{Binding FuturResult, Converter={StaticResource NullVisibilityConverter}}"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="2"
+                                        Margin="10 0 0 0">
+                                    <TextBlock Text="{Binding FuturResult}"
+                                               Foreground="AntiqueWhite"
+                                               Margin="3" />
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
+                    <controls:WatermarkTextBox WatermarkText="Pattern"
+                                               Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                               Margin="0 0 0 10" />
+                    <controls:WatermarkTextBox WatermarkText="Replace pattern"
+                                               Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <Button Grid.Column="1" x:Name="ApplyAsync" Margin="0 0 10 0">
+                    <SymbolIcon Symbol="Accept" />
+                </Button>
+            </Grid>
+
+            <controls:CustomAppBar Grid.Row="3" />
         </Grid>
 
-        <Border Grid.Row="1" BorderThickness="0 1 0 1" BorderBrush="{ThemeResource TextBoxBorderThemeBrush}">
-            <ListView ItemsSource="{Binding Files}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock
-                                Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=0}"
-                                VerticalAlignment="Center" />
-
-                            <Border Background="Crimson"
-                                    Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=1}"
-                                    VerticalAlignment="Center"
-                                    CornerRadius="2">
-                                <TextBlock
-                                    Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=1}"
-                                    Foreground="AntiqueWhite"
-                                    Margin="3" />
-                            </Border>
-
-                            <Border
-                                Visibility="{Binding Parts, Converter={StaticResource DisplayPartConverter}, ConverterParameter=2}"
-                                VerticalAlignment="Center">
-                                <TextBlock
-                                    Text="{Binding Parts, Converter={StaticResource GetArrayValueConverter}, ConverterParameter=2}" />
-                            </Border>
-
-                            <Border Background="Green"
-                                    Visibility="{Binding FuturResult, Converter={StaticResource NullVisibilityConverter}}"
-                                    VerticalAlignment="Center"
-                                    CornerRadius="2"
-                                    Margin="10 0 0 0">
-                                <TextBlock Text="{Binding FuturResult}"
-                                           Foreground="AntiqueWhite"
-                                           Margin="3" />
-                            </Border>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Border>
-
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
-                <controls:WatermarkTextBox WatermarkText="Pattern"
-                                           Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                           Margin="0 0 0 10" />
-                <controls:WatermarkTextBox WatermarkText="Replace pattern"
-                                           Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-
-            <Button Grid.Column="1" x:Name="ApplyAsync" Margin="0 0 10 0">
-                <SymbolIcon Symbol="Accept" />
-            </Button>
+        <Grid Background="Black" Opacity="0.7"
+              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border BorderBrush="AntiqueWhite"
+                    BorderThickness="2"
+                    CornerRadius="3"
+                    Width="200"
+                    Height="100">
+                <TextBlock Foreground="AntiqueWhite"
+                           Text="Loading ..."
+                           Margin="20"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center" />
+            </Border>
         </Grid>
-
-        <controls:CustomAppBar Grid.Row="3" />
     </Grid>
-
 </Page>

@@ -32,6 +32,8 @@ namespace App.ViewModels
 
         private StorageFolder _folderSelected;
 
+        private bool _isLoading;
+
         private IOpenFolderService _openFolderService;
 
         #endregion
@@ -55,34 +57,54 @@ namespace App.ViewModels
 
         public string FolderSelected => this._folderSelected?.Path;
 
+        public bool IsLoading
+        {
+            get { return this._isLoading; }
+            private set
+            {
+                this._isLoading = value;
+                this.NotifyOfPropertyChange(() => this.IsLoading);
+            }
+        }
+
         #endregion
 
         #region Interface Implementations
 
         public async Task ApplyAsync()
         {
-            foreach (var file in this.Files.Where(x => x.FuturResult != null))
-            {
-                await file.StorageFile.RenameAsync(file.FuturResult);
-            }
+            this.IsLoading = true;
 
-            await this.FetchFolderAsync();
-            await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
+            using (Disposable.Create(() => this.IsLoading = false))
+            {
+                foreach (var file in this.Files.Where(x => x.FuturResult != null))
+                {
+                    await file.StorageFile.RenameAsync(file.FuturResult);
+                }
+
+                await this.FetchFolderAsync();
+                await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
+            }
         }
 
         public async Task BrowseAsync()
         {
-            this._folderSelected = await this._openFolderService.PromptAsync();
+            this.IsLoading = true;
 
-            if (this._folderSelected == null)
+            using (Disposable.Create(() => this.IsLoading = false))
             {
-                return;
+                this._folderSelected = await this._openFolderService.PromptAsync();
+
+                if (this._folderSelected == null)
+                {
+                    return;
+                }
+
+                await this.FetchFolderAsync();
+
+                this.NotifyOfPropertyChange(() => this.FolderSelected);
+                await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
             }
-
-            await this.FetchFolderAsync();
-
-            this.NotifyOfPropertyChange(() => this.FolderSelected);
-            await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
         }
 
         #endregion

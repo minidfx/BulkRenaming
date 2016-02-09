@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-
-using Windows.Storage;
 
 using App.Models.Contracts;
 
@@ -21,6 +18,8 @@ namespace App.ViewModels.Contracts
         IEnumerable<IListViewModel> Files { get; }
 
         string FolderSelected { get; }
+
+        bool IsLoading { get; }
 
         #endregion
 
