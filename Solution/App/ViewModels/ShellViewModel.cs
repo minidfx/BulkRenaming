@@ -43,15 +43,24 @@ namespace App.ViewModels
         public ShellViewModel()
         {
             this.Files = Enumerable.Empty<IListViewModel>();
+
+            this.Pattern = new ReactiveProperty<string>()
+                .Throttle(TimeSpan.FromMilliseconds(200))
+                .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
+                .ToReactiveProperty();
+            this.ReplacePattern = new ReactiveProperty<string>()
+                .Throttle(TimeSpan.FromMilliseconds(200))
+                .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
+                .ToReactiveProperty();
         }
 
         #endregion
 
         #region Properties, Indexers
 
-        public ReactiveProperty<string> Pattern { get; set; } = new ReactiveProperty<string>().ToReactiveProperty();
+        public ReactiveProperty<string> Pattern { get; }
 
-        public ReactiveProperty<string> ReplacePattern { get; set; } = new ReactiveProperty<string>().ToReactiveProperty();
+        public ReactiveProperty<string> ReplacePattern { get; }
 
         public IEnumerable<IListViewModel> Files { get; private set; }
 
@@ -129,12 +138,8 @@ namespace App.ViewModels
             base.OnActivate();
 
             this._disposables.Add(this.Pattern
-                                      .Throttle(TimeSpan.FromMilliseconds(200))
-                                      .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
                                       .Do(pattern => this.CaculateRegex(pattern, this.ReplacePattern.Value))
                                       .Merge(this.ReplacePattern
-                                                 .Throttle(TimeSpan.FromMilliseconds(200))
-                                                 .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
                                                  .Do(replacePattern => this.CaculateRegex(this.Pattern.Value, replacePattern)))
                                       .SubscribeOn(TaskPoolScheduler.Default)
                                       .ObserveOn(UIDispatcherScheduler.Default)

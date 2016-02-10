@@ -11,9 +11,9 @@ namespace App.ViewModels.Contracts
     {
         #region Properties, Indexers
 
-        ReactiveProperty<string> Pattern { get; set; }
+        ReactiveProperty<string> Pattern { get; }
 
-        ReactiveProperty<string> ReplacePattern { get; set; }
+        ReactiveProperty<string> ReplacePattern { get; }
 
         IEnumerable<IListViewModel> Files { get; }
 
