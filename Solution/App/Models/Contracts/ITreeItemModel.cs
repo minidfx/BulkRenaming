@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace App.Models.Contracts
+namespace BulkRenaming.Models.Contracts
 {
     public interface ITreeItemModel
     {

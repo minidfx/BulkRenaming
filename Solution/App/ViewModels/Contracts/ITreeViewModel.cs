@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using App.Models.Contracts;
+using BulkRenaming.Models.Contracts;
 
-namespace App.ViewModels.Contracts
+namespace BulkRenaming.ViewModels.Contracts
 {
     public interface ITreeViewModel
     {

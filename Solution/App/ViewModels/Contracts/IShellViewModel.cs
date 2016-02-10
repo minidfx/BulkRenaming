@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using App.Models.Contracts;
+using BulkRenaming.Models.Contracts;
 
 using Reactive.Bindings;
 
-namespace App.ViewModels.Contracts
+namespace BulkRenaming.ViewModels.Contracts
 {
     public interface IShellViewModel
     {

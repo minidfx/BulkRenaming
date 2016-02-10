@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace App.ViewModels.Contracts
+namespace BulkRenaming.ViewModels.Contracts
 {
     public interface IResultViewModel : INotifyPropertyChanged
     {

@@ -3,7 +3,7 @@ using System.Linq;
 
 using Windows.UI.Xaml.Data;
 
-namespace App.Converters
+namespace BulkRenaming.Converters
 {
     public sealed class GetArrayValueConverter : IValueConverter
     {

@@ -2,7 +2,7 @@
 
 using Windows.Storage;
 
-namespace App.Models.Contracts
+namespace BulkRenaming.Models.Contracts
 {
     public interface IListViewModel
     {

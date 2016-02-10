@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
-using App.Services.Contracts;
+using BulkRenaming.Services.Contracts;
 
-namespace App.Services
+namespace BulkRenaming.Services
 {
     public class OpenFolderService : IOpenFolderService
     {

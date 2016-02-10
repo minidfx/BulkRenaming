@@ -10,7 +10,7 @@ using Microsoft.Practices.Unity;
 
 using Action = System.Action;
 
-namespace App.Infrastructure
+namespace BulkRenaming.Infrastructure
 {
     public class CaliburnBootstrapper : UnityBootstrapper
     {

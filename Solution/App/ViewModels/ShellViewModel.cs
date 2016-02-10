@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 using Windows.Storage;
 
-using App.Models;
-using App.Models.Contracts;
-using App.Services.Contracts;
-using App.ViewModels.Contracts;
+using BulkRenaming.Models;
+using BulkRenaming.Models.Contracts;
+using BulkRenaming.Services.Contracts;
+using BulkRenaming.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
@@ -22,7 +22,7 @@ using Reactive.Bindings;
 
 using WinRTXamlToolkit.Tools;
 
-namespace App.ViewModels
+namespace BulkRenaming.ViewModels
 {
     public sealed class ShellViewModel : Screen, IShellViewModel
     {

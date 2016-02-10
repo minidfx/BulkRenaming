@@ -1,7 +1,7 @@
 ﻿using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
 
-namespace App.Infrastructure
+namespace BulkRenaming.Infrastructure
 {
     public class UnityBootstrapper : BootstrapperBase
     {

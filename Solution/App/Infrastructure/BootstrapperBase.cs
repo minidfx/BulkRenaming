@@ -2,7 +2,7 @@
 
 using Windows.ApplicationModel.Activation;
 
-namespace App.Infrastructure
+namespace BulkRenaming.Infrastructure
 {
     public abstract class BootstrapperBase : IDisposable
     {

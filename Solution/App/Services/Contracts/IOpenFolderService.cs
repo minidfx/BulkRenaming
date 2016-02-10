@@ -2,7 +2,7 @@
 
 using Windows.Storage;
 
-namespace App.Services.Contracts
+namespace BulkRenaming.Services.Contracts
 {
     public interface IOpenFolderService
     {

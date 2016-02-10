@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using App.Models.Contracts;
+using BulkRenaming.Models.Contracts;
 
-namespace App.Models
+namespace BulkRenaming.Models
 {
     public sealed class TreeItemModel : ITreeItemModel
     {

@@ -2,11 +2,11 @@
 
 using Windows.Storage;
 
-using App.Models.Contracts;
+using BulkRenaming.Models.Contracts;
 
 using Caliburn.Micro;
 
-namespace App.Models
+namespace BulkRenaming.Models
 {
     public sealed class ListViewModel : ViewAware, IListViewModel
     {

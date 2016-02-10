@@ -1,8 +1,8 @@
-﻿using App.ViewModels.Contracts;
+﻿using BulkRenaming.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
-namespace App.ViewModels
+namespace BulkRenaming.ViewModels
 {
     public class ResultViewViewModel : ViewAware, IResultViewModel
     {

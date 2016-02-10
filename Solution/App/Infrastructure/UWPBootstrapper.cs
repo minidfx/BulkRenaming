@@ -1,13 +1,13 @@
 ﻿using System;
 
-using App.Services;
-using App.Services.Contracts;
-using App.ViewModels;
-using App.ViewModels.Contracts;
+using BulkRenaming.Services;
+using BulkRenaming.Services.Contracts;
+using BulkRenaming.ViewModels;
+using BulkRenaming.ViewModels.Contracts;
 
 using Microsoft.Practices.Unity;
 
-namespace App.Infrastructure
+namespace BulkRenaming.Infrastructure
 {
     // ReSharper disable once InconsistentNaming
     public sealed class UWPBootstrapper : CaliburnBootstrapper

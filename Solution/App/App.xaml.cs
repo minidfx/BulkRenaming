@@ -1,14 +1,14 @@
 ﻿using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 
-using App.Infrastructure;
-using App.ViewModels.Contracts;
+using BulkRenaming.Infrastructure;
+using BulkRenaming.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
 using Microsoft.Practices.ServiceLocation;
 
-namespace App
+namespace BulkRenaming
 {
     /// <summary>
     ///     Provides application-specific behavior to supplement the default Application class.
