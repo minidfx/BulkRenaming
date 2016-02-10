@@ -3,7 +3,7 @@
   <Identity Name="a2c650a1-de4b-4e58-b61e-580385d57d3a" Publisher="CN=MiniDfx" Version="0.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="a2c650a1-de4b-4e58-b61e-580385d57d3a" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>App</DisplayName>
+    <DisplayName>Bulk renaming</DisplayName>
     <PublisherDisplayName>MiniDfx</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -22,7 +22,4 @@
       </uap:VisualElements>
     </Application>
   </Applications>
-  <Capabilities>
-    <Capability Name="internetClient" />
-  </Capabilities>
 </Package>
