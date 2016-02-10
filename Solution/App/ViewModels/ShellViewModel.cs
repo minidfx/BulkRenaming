@@ -162,7 +162,9 @@ namespace App.ViewModels
                     return;
                 }
 
-                var regex = new Regex(pattern);
+                var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+                var increment = 0;
 
                 foreach (var file in this.Files)
                 {
@@ -190,7 +192,10 @@ namespace App.ViewModels
                         }
 
                         var result = match.Result(replacePattern);
-                        file.FuturResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
+                        var futurResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
+
+                        file.FuturResult = futurResult.Replace("%i", increment.ToString());
+                        increment++;
                     }
                     else
                     {
