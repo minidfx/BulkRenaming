@@ -95,11 +95,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Behaviors\TreeViewBehavior.cs" />
     <Compile Include="Converters\DisplayPartConverter.cs" />
     <Compile Include="Converters\GetArrayValueConverter.cs" />
     <Compile Include="Converters\NullVisibilityConverter.cs" />
-    <Compile Include="Extensions\PropertyChangedEventArgsExtension.cs" />
     <Compile Include="Infrastructure\BootstrapperBase.cs" />
     <Compile Include="Infrastructure\CaliburnBootstrapper.cs" />
     <Compile Include="Infrastructure\UnityBootstrapper.cs" />
@@ -151,6 +149,7 @@
       <Name>Behaviors SDK %28XAML%29</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

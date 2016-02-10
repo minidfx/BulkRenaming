@@ -6,7 +6,7 @@ using App.Models.Contracts;
 
 namespace App.Models
 {
-    public class TreeItemModel : ITreeItemModel
+    public sealed class TreeItemModel : ITreeItemModel
     {
         #region Constructors
 
