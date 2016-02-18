@@ -7,7 +7,9 @@ using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
+using Windows.UI.Core;
 
 using BulkRenaming.Models;
 using BulkRenaming.Models.Contracts;
@@ -44,6 +46,8 @@ namespace BulkRenaming.ViewModels
         {
             this.Files = Enumerable.Empty<IListViewModel>();
 
+            this.FolderSelected = "Select a folder by clicking on the right button";
+
             this.Pattern = new ReactiveProperty<string>()
                 .Throttle(TimeSpan.FromMilliseconds(200))
                 .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
@@ -64,7 +68,7 @@ namespace BulkRenaming.ViewModels
 
         public IEnumerable<IListViewModel> Files { get; private set; }
 
-        public string FolderSelected => this._folderSelected?.Path;
+        public string FolderSelected { get; private set; }
 
         public bool IsLoading
         {
@@ -91,8 +95,10 @@ namespace BulkRenaming.ViewModels
                     await file.StorageFile.RenameAsync(file.FuturResult);
                 }
 
-                await this.FetchFolderAsync();
-                await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
+                await this.FetchFolderAsync().ConfigureAwait(false);
+
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                                                                              () => { this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
             }
         }
 
@@ -102,17 +108,20 @@ namespace BulkRenaming.ViewModels
 
             using (Disposable.Create(() => this.IsLoading = false))
             {
-                this._folderSelected = await this._openFolderService.PromptAsync();
+                this._folderSelected = await this._openFolderService.PromptAsync().ConfigureAwait(false);
 
                 if (this._folderSelected == null)
                 {
                     return;
                 }
 
-                await this.FetchFolderAsync();
+                await this.FetchFolderAsync().ConfigureAwait(false);
 
+                this.FolderSelected = this._folderSelected.Path;
                 this.NotifyOfPropertyChange(() => this.FolderSelected);
-                await Task.Run(() => this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value));
+
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                                                                              () => { this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
             }
         }
 

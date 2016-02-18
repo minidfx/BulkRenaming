@@ -8,7 +8,7 @@ using BulkRenaming.Services.Contracts;
 
 namespace BulkRenaming.Services
 {
-    public class OpenFolderService : IOpenFolderService
+    public sealed class OpenFolderService : IOpenFolderService
     {
         #region Interface Implementations
 
