@@ -31,9 +31,23 @@ namespace BulkRenaming.Infrastructure
                 .RegisterType<IShellViewModel, ShellViewModel>();
         }
 
+        ~UWPBootstrapper()
+        {
+            this.Dispose(true);
+        }
+
+        public override void Dispose(bool disposing)
+        {
+            // For managed resources
+            if (disposing)
+            {
+                // ...
+            }
+        }
+
         public override void Dispose()
         {
-            base.Dispose();
+            base.Dispose(true);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

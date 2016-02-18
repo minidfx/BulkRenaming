@@ -29,9 +29,12 @@ namespace BulkRenaming.Infrastructure
             ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(this.UnityContainer));
         }
 
-        public override void Dispose()
+        public override void Dispose(bool disposing)
         {
-            this.UnityContainer.Dispose();
+            if (disposing)
+            {
+                this.UnityContainer.Dispose();
+            }
         }
 
         #endregion
