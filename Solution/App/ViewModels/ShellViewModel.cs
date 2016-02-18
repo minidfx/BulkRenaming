@@ -18,8 +18,6 @@ using BulkRenaming.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
-using Microsoft.Practices.ServiceLocation;
-
 using Reactive.Bindings;
 
 using WinRTXamlToolkit.Tools;
@@ -32,20 +30,21 @@ namespace BulkRenaming.ViewModels
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
+        private readonly IOpenFolderService _openFolderService;
+
         private StorageFolder _folderSelected;
 
         private bool _isLoading;
-
-        private IOpenFolderService _openFolderService;
 
         #endregion
 
         #region Constructors
 
-        public ShellViewModel()
+        public ShellViewModel(IOpenFolderService openFolderService)
         {
-            this.Files = Enumerable.Empty<IListViewModel>();
+            this._openFolderService = openFolderService;
 
+            this.Files = Enumerable.Empty<IListViewModel>();
             this.FolderSelected = "Select a folder by clicking on the right button";
 
             this.Pattern = new ReactiveProperty<string>()
@@ -128,16 +127,6 @@ namespace BulkRenaming.ViewModels
         #endregion
 
         #region All other members
-
-        /// <summary>
-        ///     Called when initializing.
-        /// </summary>
-        protected override void OnInitialize()
-        {
-            base.OnInitialize();
-
-            this._openFolderService = ServiceLocator.Current.GetInstance<IOpenFolderService>();
-        }
 
         /// <summary>
         ///     Called when activating.
