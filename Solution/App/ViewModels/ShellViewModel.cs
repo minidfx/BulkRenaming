@@ -164,7 +164,7 @@ namespace BulkRenaming.ViewModels
 
                 var regex = new Regex(pattern, RegexOptions.IgnoreCase);
 
-                var increment = 0;
+                var increment = 1;
 
                 foreach (var file in this.Files)
                 {
