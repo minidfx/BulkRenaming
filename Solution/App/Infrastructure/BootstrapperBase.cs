@@ -4,6 +4,9 @@ using Windows.ApplicationModel.Activation;
 
 namespace BulkRenaming.Infrastructure
 {
+    /// <summary>
+    ///     The base bootstrapper for loading application dependencies.
+    /// </summary>
     public abstract class BootstrapperBase : IDisposable
     {
         #region Interface Implementations

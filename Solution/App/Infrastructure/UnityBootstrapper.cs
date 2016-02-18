@@ -3,6 +3,9 @@ using Microsoft.Practices.Unity;
 
 namespace BulkRenaming.Infrastructure
 {
+    /// <summary>
+    ///     Bootstrapper for configuring Unity.
+    /// </summary>
     public class UnityBootstrapper : BootstrapperBase
     {
         #region Constructors

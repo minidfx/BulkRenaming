@@ -9,6 +9,9 @@ using Microsoft.Practices.Unity;
 
 namespace BulkRenaming.Infrastructure
 {
+    /// <summary>
+    ///     Bootstrapper for configuring the application boot.
+    /// </summary>
     // ReSharper disable once InconsistentNaming
     public sealed class UWPBootstrapper : CaliburnBootstrapper
     {

@@ -12,6 +12,9 @@ using Action = System.Action;
 
 namespace BulkRenaming.Infrastructure
 {
+    /// <summary>
+    ///     Bootstrapper for configuring Caliburn with Unity.
+    /// </summary>
     public class CaliburnBootstrapper : UnityBootstrapper
     {
         #region Fields
