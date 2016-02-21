@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 using Windows.UI.Xaml.Data;
 
@@ -18,7 +17,7 @@ namespace BulkRenaming.Converters
             }
 
             var indexArray = uint.Parse((string) parameter);
-            if (indexArray >= values.Count())
+            if (indexArray >= values.Length)
             {
                 return string.Empty;
             }

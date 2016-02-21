@@ -1,4 +1,6 @@
-﻿using Windows.ApplicationModel.Activation;
+﻿using System;
+
+using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 
 using BulkRenaming.Infrastructure;
@@ -13,7 +15,7 @@ namespace BulkRenaming
     /// <summary>
     ///     Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App
+    public sealed partial class App : IDisposable
     {
         #region Fields
 
@@ -46,6 +48,18 @@ namespace BulkRenaming
                 Window.Current.Content = uiElement;
                 Window.Current.Activate();
             });
+        }
+
+        #endregion
+
+        #region Interface Implementations
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this._bootstrapper.Dispose();
         }
 
         #endregion

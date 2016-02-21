@@ -39,22 +39,17 @@ namespace BulkRenaming.Infrastructure
             this.Dispose(true);
         }
 
-        public override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            // For managed resources
+            base.Dispose(disposing);
+
+            // For resources managed
             if (disposing)
             {
-                // ...
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.SuppressFinalize(this);
             }
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose(true);
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.SuppressFinalize(this);
         }
 
         #endregion

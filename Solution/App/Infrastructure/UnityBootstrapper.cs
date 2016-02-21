@@ -32,7 +32,8 @@ namespace BulkRenaming.Infrastructure
             ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(this.UnityContainer));
         }
 
-        public override void Dispose(bool disposing)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "<UnityContainer>k__BackingField", Justification = "Dispose method is called.")]
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

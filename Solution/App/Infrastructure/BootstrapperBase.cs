@@ -14,15 +14,16 @@ namespace BulkRenaming.Infrastructure
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public virtual void Dispose()
+        public void Dispose()
         {
+            this.Dispose(true);
         }
 
         #endregion
 
         #region All other members
 
-        public abstract void Dispose(bool disposing);
+        protected abstract void Dispose(bool disposing);
 
         public virtual void Run(LaunchActivatedEventArgs e)
         {
