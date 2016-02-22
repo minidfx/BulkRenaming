@@ -119,8 +119,8 @@
                     <TextBlock Text="&#128712;" FontSize="34" />
 
                     <TextBlock
-                        Text="The placeholder %i can be used as increment per items where regex match is successful."
-                        VerticalAlignment="Center"/>
+                        Text="The placeholder %i can be used as increment per items where regex matches successfully."
+                        VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
         </Grid>
