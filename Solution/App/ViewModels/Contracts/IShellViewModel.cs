@@ -21,6 +21,8 @@ namespace BulkRenaming.ViewModels.Contracts
 
         bool IsLoading { get; }
 
+        bool CanApplyAsync { get; }
+
         #endregion
 
         #region All other members
