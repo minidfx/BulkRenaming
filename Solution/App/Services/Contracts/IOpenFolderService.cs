@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-
+﻿using Windows.Foundation;
 using Windows.Storage;
 
 namespace BulkRenaming.Services.Contracts
@@ -8,7 +7,7 @@ namespace BulkRenaming.Services.Contracts
     {
         #region All other members
 
-        Task<StorageFolder> PromptAsync();
+        IAsyncOperation<StorageFolder> PromptAsync();
 
         #endregion
     }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
+﻿using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
@@ -12,16 +10,16 @@ namespace BulkRenaming.Services
     {
         #region Interface Implementations
 
-        public async Task<StorageFolder> PromptAsync()
+        public IAsyncOperation<StorageFolder> PromptAsync()
         {
             var folderPicker = new FolderPicker
                                {
-                                   ViewMode = PickerViewMode.Thumbnail,
-                                   SuggestedStartLocation = PickerLocationId.Desktop,
-                                   FileTypeFilter = {"."}
+                                   ViewMode = PickerViewMode.List,
+                                   SuggestedStartLocation = PickerLocationId.ComputerFolder,
+                                   FileTypeFilter = {"*"}
                                };
 
-            return await folderPicker.PickSingleFolderAsync();
+            return folderPicker.PickSingleFolderAsync();
         }
 
         #endregion
