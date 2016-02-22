@@ -20,8 +20,6 @@ using Caliburn.Micro;
 
 using Reactive.Bindings;
 
-using WinRTXamlToolkit.Tools;
-
 namespace BulkRenaming.ViewModels
 {
     public sealed class ShellViewModel : Screen, IShellViewModel
@@ -79,6 +77,8 @@ namespace BulkRenaming.ViewModels
             }
         }
 
+        public bool CanApplyAsync { get; private set; }
+
         #endregion
 
         #region Interface Implementations
@@ -97,7 +97,7 @@ namespace BulkRenaming.ViewModels
                 await this.FetchFolderAsync().ConfigureAwait(false);
 
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                                                              () => { this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
+                                                                              () => { this.CalculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
             }
         }
 
@@ -120,7 +120,7 @@ namespace BulkRenaming.ViewModels
                 this.NotifyOfPropertyChange(() => this.FolderSelected);
 
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                                                              () => { this.CaculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
+                                                                              () => { this.CalculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
             }
         }
 
@@ -136,81 +136,97 @@ namespace BulkRenaming.ViewModels
             base.OnActivate();
 
             this._disposables.Add(this.Pattern
-                                      .Do(pattern => this.CaculateRegex(pattern, this.ReplacePattern.Value))
+                                      .Do(pattern => this.CalculateRegex(pattern, this.ReplacePattern.Value))
                                       .Merge(this.ReplacePattern
-                                                 .Do(replacePattern => this.CaculateRegex(this.Pattern.Value, replacePattern)))
+                                                 .Do(replacePattern => this.CalculateRegex(this.Pattern.Value, replacePattern)))
                                       .SubscribeOn(TaskPoolScheduler.Default)
                                       .ObserveOn(UIDispatcherScheduler.Default)
                                       .Subscribe());
         }
 
-        private void CaculateRegex(string pattern, string replacePattern)
+        private void CalculateRegex(string pattern, string replacePattern)
         {
-            try
+            if (pattern == null)
             {
-                if (pattern == null)
-                {
-                    foreach (var file in this.Files)
-                    {
-                        file.Parts = new[] {file.FileName};
-                        file.FuturResult = null;
-                        file.Success = false;
-                    }
-
-                    return;
-                }
-
-                var regex = new Regex(pattern, RegexOptions.IgnoreCase);
-
-                var increment = 1;
-
                 foreach (var file in this.Files)
                 {
-                    var fileName = file.FileName;
-                    var match = regex.Match(fileName);
-
-                    file.Success = match.Success;
-
-                    if (match.Success)
-                    {
-                        var patternIdentified = match.Value;
-                        var indexOf = file.FileName.IndexOf(patternIdentified, StringComparison.Ordinal);
-
-                        file.Parts = new[]
-                                     {
-                                         fileName.Substring(0, indexOf),
-                                         fileName.Substring(indexOf, patternIdentified.Length),
-                                         fileName.Substring(indexOf + patternIdentified.Length)
-                                     };
-
-                        if (replacePattern == null)
-                        {
-                            file.FuturResult = null;
-                            continue;
-                        }
-
-                        var result = match.Result(replacePattern);
-                        var futurResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
-
-                        file.FuturResult = futurResult.Replace("%i", increment.ToString());
-                        increment++;
-                    }
-                    else
-                    {
-                        file.Parts = new[] {fileName};
-                        file.FuturResult = null;
-                        file.Success = false;
-                    }
+                    file.Parts = new[] {file.FileName};
+                    file.FuturResult = null;
+                    file.Success = false;
                 }
+
+                return;
+            }
+
+            Regex regex;
+
+            try
+            {
+                regex = new Regex(pattern, RegexOptions.IgnoreCase);
             }
             catch (ArgumentException)
             {
-                this.Files.ForEach(x =>
+                return;
+            }
+
+            var items = this.Files.Where(x => x.FileName != null).Select(x => new
+                                                                              {
+                                                                                  Match = regex.Match(x.FileName),
+                                                                                  ItemViewModel = x
+                                                                              })
+                            .ToArray();
+
+            this.CanApplyAsync = items.Any(x => x.Match.Success) && !string.IsNullOrWhiteSpace(replacePattern);
+            this.NotifyOfPropertyChange(() => this.CanApplyAsync);
+
+            var itemsMatch = items.Where(x => x.Match.Success).ToArray();
+
+            // Items with a match
+            foreach (var item in itemsMatch)
+            {
+                var match = item.Match;
+                var patternIdentified = match.Value;
+                var fileName = item.ItemViewModel.FileName;
+                var indexOf = fileName.IndexOf(patternIdentified, StringComparison.Ordinal);
+
+                item.ItemViewModel.Parts = new[]
+                                           {
+                                               fileName.Substring(0, indexOf),
+                                               fileName.Substring(indexOf, patternIdentified.Length),
+                                               fileName.Substring(indexOf + patternIdentified.Length)
+                                           };
+            }
+
+            // When the replace pattern is specified
+            if (!string.IsNullOrWhiteSpace(replacePattern))
+            {
+                var increment = 1;
+
+                foreach (var item in itemsMatch)
                 {
-                    x.Parts = new[] {x.FileName};
-                    x.FuturResult = null;
-                    x.Success = false;
-                });
+                    var match = item.Match;
+
+                    var result = item.Match.Result(replacePattern);
+                    var futurResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
+
+                    item.ItemViewModel.FuturResult = futurResult.Replace("%i", increment++.ToString());
+                }
+            }
+            else
+            {
+                foreach (var item in itemsMatch)
+                {
+                    item.ItemViewModel.FuturResult = null;
+                }
+            }
+
+            // Items with no match
+            foreach (var itemViewModel in items.Where(x => !x.Match.Success)
+                                               .Select(x => x.ItemViewModel))
+            {
+                itemViewModel.Parts = new[] {itemViewModel.FileName};
+                itemViewModel.FuturResult = null;
+                itemViewModel.Success = false;
             }
         }
 
