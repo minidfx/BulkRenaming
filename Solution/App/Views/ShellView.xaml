@@ -21,7 +21,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Margin="10">
@@ -34,6 +33,7 @@
                 <TextBlock Grid.Row="0" Text="{Binding FolderSelected}"
                            VerticalAlignment="Center" />
 
+                <!-- ReSharper disable once NotAccessedField.Local -->
                 <Button Grid.Column="1" x:Name="BrowseAsync">
                     <SymbolIcon Symbol="OpenLocal" />
                 </Button>
@@ -81,25 +81,48 @@
             </Border>
 
             <Grid Grid.Row="2">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
+                <StackPanel Grid.Row="0"
+                            Orientation="Vertical"
+                            Grid.Column="0"
+                            Margin="10">
                     <controls:WatermarkTextBox WatermarkText="Regex"
                                                Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                Margin="0 0 0 10" />
-                    <controls:WatermarkTextBox WatermarkText="Replacement pattern"
+                    <controls:WatermarkTextBox WatermarkText="Output pattern"
                                                Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
-                <Button Grid.Column="1" x:Name="ApplyAsync" Margin="0 0 10 0">
+                <!-- ReSharper disable once NotAccessedField.Local -->
+                <Button Grid.Row="0"
+                        Grid.Column="1"
+                        x:Name="ApplyAsync"
+                        Margin="0 0 10 0">
                     <SymbolIcon Symbol="Accept" />
                 </Button>
-            </Grid>
 
-            <controls:CustomAppBar Grid.Row="3" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Grid.Column="0"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="&#128712;" FontSize="34" />
+
+                    <TextBlock
+                        Text="The placeholder %i can be used as increment per items where regex match is successful."
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
         </Grid>
 
         <Grid Background="Black" Opacity="0.7"
