@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 
 using BulkRenaming.Models;
 using BulkRenaming.Models.Contracts;
@@ -103,11 +104,16 @@ namespace BulkRenaming.ViewModels
 
         public async Task BrowseAsync()
         {
-            this.IsLoading = true;
-
             using (Disposable.Create(() => this.IsLoading = false))
             {
-                this._folderSelected = await this._openFolderService.PromptAsync().ConfigureAwait(false);
+                this.IsLoading = true;
+
+                if (!IsUnsnapped())
+                {
+                    throw new NotImplementedException("Cannot browse any folders when the application is snapped.");
+                }
+
+                this._folderSelected = await this._openFolderService.PromptAsync();
 
                 if (this._folderSelected == null)
                 {
@@ -127,6 +133,23 @@ namespace BulkRenaming.ViewModels
         #endregion
 
         #region All other members
+
+        /// <summary>
+        ///     FilePicker APIs will not work if the application is in a snapped state.
+        ///     If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+        /// </summary>
+        /// <returns>
+        ///     <see langword="true" /> whether the application is unsnapped otherwise <see langword="false" />.
+        /// </returns>
+        /// <remarks>
+        ///     Copied from https://msdn.microsoft.com/library/windows/apps/br207881?cs-save-lang=1&cs-lang=csharp#code-snippet-2
+        /// </remarks>
+        private static bool IsUnsnapped()
+        {
+            // FilePicker APIs will not work if the application is in a snapped state.
+            // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+            return ((ApplicationView.Value != ApplicationViewState.Snapped) || ApplicationView.TryUnsnap());
+        }
 
         /// <summary>
         ///     Called when activating.
