@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using BulkRenaming.Models.Contracts;
-
 using Reactive.Bindings;
 
 namespace BulkRenaming.ViewModels.Contracts

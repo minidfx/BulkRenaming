@@ -12,8 +12,6 @@ using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
-using BulkRenaming.Models;
-using BulkRenaming.Models.Contracts;
 using BulkRenaming.Services.Contracts;
 using BulkRenaming.ViewModels.Contracts;
 
@@ -98,7 +96,7 @@ namespace BulkRenaming.ViewModels
                 await this.FetchFolderAsync().ConfigureAwait(false);
 
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                                                              () => { this.CalculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
+                                                                              this.CalculateRegex);
             }
         }
 
@@ -126,7 +124,7 @@ namespace BulkRenaming.ViewModels
                 this.NotifyOfPropertyChange(() => this.FolderSelected);
 
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                                                              () => { this.CalculateRegex(this.Pattern.Value, this.ReplacePattern.Value); });
+                                                                              this.CalculateRegex);
             }
         }
 
@@ -159,15 +157,56 @@ namespace BulkRenaming.ViewModels
             base.OnActivate();
 
             this._disposables.Add(this.Pattern
-                                      .Do(pattern => this.CalculateRegex(pattern, this.ReplacePattern.Value))
+                                      .Do(this.CalculateRegex)
                                       .Merge(this.ReplacePattern
-                                                 .Do(replacePattern => this.CalculateRegex(this.Pattern.Value, replacePattern)))
+                                                 .Do(this.CalculateReplacePattern))
                                       .SubscribeOn(TaskPoolScheduler.Default)
                                       .ObserveOn(UIDispatcherScheduler.Default)
                                       .Subscribe());
         }
 
-        private void CalculateRegex(string pattern, string replacePattern)
+        private void CalculateReplacePattern()
+        {
+            this.CalculateReplacePattern(this.ReplacePattern.Value);
+        }
+
+        private void CalculateReplacePattern(string replacePattern)
+        {
+            // When the replace pattern is specified
+            if (!string.IsNullOrWhiteSpace(replacePattern))
+            {
+                var increment = 1;
+
+                foreach (var item in this.Files.Where(x => x.RegexMatch.Success))
+                {
+                    var match = item.RegexMatch;
+                    var result = match.Result(replacePattern);
+                    var futurResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
+
+                    item.FuturResult = futurResult.Replace("%i", increment++.ToString());
+                }
+
+                this.CanApplyAsync = this.Files.Any(x => x.RegexMatch.Success) && this.ReplacePattern.Value != null;
+                this.NotifyOfPropertyChange(() => this.CanApplyAsync);
+            }
+            else
+            {
+                foreach (var item in this.Files)
+                {
+                    item.FuturResult = null;
+                }
+
+                this.CanApplyAsync = false;
+                this.NotifyOfPropertyChange(() => this.CanApplyAsync);
+            }
+        }
+
+        private void CalculateRegex()
+        {
+            this.CalculateRegex(this.Pattern.Value);
+        }
+
+        private void CalculateRegex(string pattern)
         {
             if (pattern == null)
             {
@@ -175,7 +214,6 @@ namespace BulkRenaming.ViewModels
                 {
                     file.Parts = new[] {file.FileName};
                     file.FuturResult = null;
-                    file.Success = false;
                 }
 
                 return;
@@ -192,65 +230,29 @@ namespace BulkRenaming.ViewModels
                 return;
             }
 
-            var items = this.Files.Where(x => x.FileName != null).Select(x => new
-                                                                              {
-                                                                                  Match = regex.Match(x.FileName),
-                                                                                  ItemViewModel = x
-                                                                              })
-                            .ToArray();
-
-            this.CanApplyAsync = items.Any(x => x.Match.Success) && !string.IsNullOrWhiteSpace(replacePattern);
-            this.NotifyOfPropertyChange(() => this.CanApplyAsync);
-
-            var itemsMatch = items.Where(x => x.Match.Success).ToArray();
-
             // Items with a match
-            foreach (var item in itemsMatch)
+            foreach (var item in this.Files)
             {
-                var match = item.Match;
+                var match = item.RegexMatch = regex.Match(item.FileName);
                 var patternIdentified = match.Value;
-                var fileName = item.ItemViewModel.FileName;
+                var fileName = item.FileName;
                 var indexOf = fileName.IndexOf(patternIdentified, StringComparison.Ordinal);
 
-                item.ItemViewModel.Parts = new[]
-                                           {
-                                               fileName.Substring(0, indexOf),
-                                               fileName.Substring(indexOf, patternIdentified.Length),
-                                               fileName.Substring(indexOf + patternIdentified.Length)
-                                           };
-            }
+                item.Parts = new[]
+                             {
+                                 fileName.Substring(0, indexOf),
+                                 fileName.Substring(indexOf, patternIdentified.Length),
+                                 fileName.Substring(indexOf + patternIdentified.Length)
+                             };
 
-            // When the replace pattern is specified
-            if (!string.IsNullOrWhiteSpace(replacePattern))
-            {
-                var increment = 1;
-
-                foreach (var item in itemsMatch)
+                if (!match.Success)
                 {
-                    var match = item.Match;
-
-                    var result = item.Match.Result(replacePattern);
-                    var futurResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
-
-                    item.ItemViewModel.FuturResult = futurResult.Replace("%i", increment++.ToString());
-                }
-            }
-            else
-            {
-                foreach (var item in itemsMatch)
-                {
-                    item.ItemViewModel.FuturResult = null;
+                    item.Parts = new[] {item.FileName};
+                    item.FuturResult = null;
                 }
             }
 
-            // Items with no match
-            foreach (var itemViewModel in items.Where(x => !x.Match.Success)
-                                               .Select(x => x.ItemViewModel))
-            {
-                itemViewModel.Parts = new[] {itemViewModel.FileName};
-                itemViewModel.FuturResult = null;
-                itemViewModel.Success = false;
-            }
+            this.CalculateReplacePattern();
         }
 
         /// <summary>

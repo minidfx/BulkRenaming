@@ -107,11 +107,11 @@
     <Compile Include="Infrastructure\CaliburnBootstrapper.cs" />
     <Compile Include="Infrastructure\UnityBootstrapper.cs" />
     <Compile Include="Infrastructure\UWPBootstrapper.cs" />
-    <Compile Include="Models\Contracts\IListViewModel.cs" />
-    <Compile Include="Models\ListViewModel.cs" />
     <Compile Include="Services\Contracts\IOpenFolderService.cs" />
     <Compile Include="Services\OpenFolderService.cs" />
+    <Compile Include="ViewModels\Contracts\IListViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IShellViewModel.cs" />
+    <Compile Include="ViewModels\ListViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>

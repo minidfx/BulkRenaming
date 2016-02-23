@@ -1,24 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using Windows.Storage;
 
-using BulkRenaming.Models.Contracts;
+using BulkRenaming.ViewModels.Contracts;
 
 using Caliburn.Micro;
 
-namespace BulkRenaming.Models
+namespace BulkRenaming.ViewModels
 {
     public sealed class ListViewModel : ViewAware, IListViewModel
     {
         #region Fields
 
-        private string _fileName;
-
         private string _futurResult;
 
         private IEnumerable<string> _parts;
-
-        private bool _success;
 
         #endregion
 
@@ -35,17 +32,9 @@ namespace BulkRenaming.Models
 
         #region Properties, Indexers
 
-        public string FileName
-        {
-            get { return this._fileName; }
-            set
-            {
-                this._fileName = value;
-                this.NotifyOfPropertyChange(() => this.FileName);
-            }
-        }
+        public string FileName { get; }
 
-        public StorageFile StorageFile { get; set; }
+        public StorageFile StorageFile { get; }
 
         public string FuturResult
         {
@@ -57,6 +46,8 @@ namespace BulkRenaming.Models
             }
         }
 
+        public Match RegexMatch { get; set; }
+
         public IEnumerable<string> Parts
         {
             get { return this._parts; }
@@ -64,16 +55,6 @@ namespace BulkRenaming.Models
             {
                 this._parts = value;
                 this.NotifyOfPropertyChange(() => this.Parts);
-            }
-        }
-
-        public bool Success
-        {
-            get { return this._success; }
-            set
-            {
-                this._success = value;
-                this.NotifyOfPropertyChange(() => this.Success);
             }
         }
 
