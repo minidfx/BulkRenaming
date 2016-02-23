@@ -7,9 +7,7 @@ using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using Windows.ApplicationModel.Core;
 using Windows.Storage;
-using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 
 using BulkRenaming.Services.Contracts;
@@ -94,9 +92,7 @@ namespace BulkRenaming.ViewModels
                 }
 
                 await this.FetchFolderAsync().ConfigureAwait(false);
-
-                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                                                              this.CalculateRegex);
+                await this.CalculateRegexAsync().ConfigureAwait(false);
             }
         }
 
@@ -123,8 +119,7 @@ namespace BulkRenaming.ViewModels
                 this.FolderSelected = this._folderSelected.Path;
                 this.NotifyOfPropertyChange(() => this.FolderSelected);
 
-                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                                                              this.CalculateRegex);
+                await this.CalculateRegexAsync().ConfigureAwait(false);
             }
         }
 
@@ -157,38 +152,40 @@ namespace BulkRenaming.ViewModels
             base.OnActivate();
 
             this._disposables.Add(this.Pattern
-                                      .Do(this.CalculateRegex)
+                                      .Do(async pattern => await this.CalculateRegexAsync(pattern).ConfigureAwait(false))
                                       .Merge(this.ReplacePattern
-                                                 .Do(this.CalculateReplacePattern))
+                                                 .Do(async replacePattern => await this.CalculateReplacePatternAsync(replacePattern).ConfigureAwait(false)))
                                       .SubscribeOn(TaskPoolScheduler.Default)
-                                      .ObserveOn(UIDispatcherScheduler.Default)
+                                      .ObserveOn(TaskPoolScheduler.Default)
                                       .Subscribe());
         }
 
-        private void CalculateReplacePattern()
+        private Task CalculateReplacePatternAsync()
         {
-            this.CalculateReplacePattern(this.ReplacePattern.Value);
+            return this.CalculateReplacePatternAsync(this.ReplacePattern.Value);
         }
 
-        private void CalculateReplacePattern(string replacePattern)
+        private async Task CalculateReplacePatternAsync(string replacePattern)
         {
             // When the replace pattern is specified
             if (!string.IsNullOrWhiteSpace(replacePattern))
             {
                 var increment = 1;
+                var files = await this._folderSelected.GetFilesAsync();
 
                 foreach (var item in this.Files.Where(x => x.RegexMatch.Success))
                 {
                     var match = item.RegexMatch;
-                    var result = match.Result(replacePattern);
-                    var futurResult = string.IsNullOrWhiteSpace(result) ? match.Result(replacePattern) : result;
+                    var futurResult = match.Result(replacePattern).Replace("%i", increment++.ToString());
+                    var fileExists = files.Any(x => x.Name.Equals(futurResult));
 
-                    item.FuturResult = futurResult.Replace("%i", increment++.ToString());
+                    item.FuturResult = fileExists ? null : futurResult;
                 }
 
                 this.CanApplyAsync = this.Files.Any(x => x.RegexMatch.Success) && this.ReplacePattern.Value != null;
                 this.NotifyOfPropertyChange(() => this.CanApplyAsync);
             }
+
             else
             {
                 foreach (var item in this.Files)
@@ -201,12 +198,12 @@ namespace BulkRenaming.ViewModels
             }
         }
 
-        private void CalculateRegex()
+        private Task CalculateRegexAsync()
         {
-            this.CalculateRegex(this.Pattern.Value);
+            return this.CalculateRegexAsync(this.Pattern.Value);
         }
 
-        private void CalculateRegex(string pattern)
+        private Task CalculateRegexAsync(string pattern)
         {
             if (pattern == null)
             {
@@ -216,7 +213,7 @@ namespace BulkRenaming.ViewModels
                     file.FuturResult = null;
                 }
 
-                return;
+                return Task.FromResult(0);
             }
 
             Regex regex;
@@ -227,7 +224,12 @@ namespace BulkRenaming.ViewModels
             }
             catch (ArgumentException)
             {
-                return;
+                foreach (var item in this.Files)
+                {
+                    item.Parts = new[] {item.FileName};
+                }
+
+                return Task.FromResult(0);
             }
 
             // Items with a match
@@ -238,21 +240,17 @@ namespace BulkRenaming.ViewModels
                 var fileName = item.FileName;
                 var indexOf = fileName.IndexOf(patternIdentified, StringComparison.Ordinal);
 
-                item.Parts = new[]
-                             {
-                                 fileName.Substring(0, indexOf),
-                                 fileName.Substring(indexOf, patternIdentified.Length),
-                                 fileName.Substring(indexOf + patternIdentified.Length)
-                             };
-
-                if (!match.Success)
-                {
-                    item.Parts = new[] {item.FileName};
-                    item.FuturResult = null;
-                }
+                item.Parts = match.Success
+                                 ? new[]
+                                   {
+                                       fileName.Substring(0, indexOf),
+                                       fileName.Substring(indexOf, patternIdentified.Length),
+                                       fileName.Substring(indexOf + patternIdentified.Length)
+                                   }
+                                 : new[] {item.FileName};
             }
 
-            this.CalculateReplacePattern();
+            return this.CalculateReplacePatternAsync();
         }
 
         /// <summary>
