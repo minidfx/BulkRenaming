@@ -96,10 +96,10 @@
                             Orientation="Vertical"
                             Grid.Column="0"
                             Margin="10">
-                    <controls:WatermarkTextBox WatermarkText="Regex"
+                    <controls:WatermarkTextBox WatermarkText="Capture regex"
                                                Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                Margin="0 0 0 10" />
-                    <controls:WatermarkTextBox WatermarkText="Output pattern"
+                    <controls:WatermarkTextBox WatermarkText="New filename pattern"
                                                Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
