@@ -185,7 +185,6 @@ namespace BulkRenaming.ViewModels
                 this.CanApplyAsync = this.Files.Any(x => x.RegexMatch.Success) && this.ReplacePattern.Value != null;
                 this.NotifyOfPropertyChange(() => this.CanApplyAsync);
             }
-
             else
             {
                 foreach (var item in this.Files)
