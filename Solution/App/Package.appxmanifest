@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="a2c650a1-de4b-4e58-b61e-580385d57d3a" Publisher="CN=MiniDfx" Version="0.1.0.0" />
+  <Identity Name="a2c650a1-de4b-4e58-b61e-580385d57d3a" Publisher="CN=Burgy Benjamin" Version="0.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="a2c650a1-de4b-4e58-b61e-580385d57d3a" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Bulk Renaming</DisplayName>
-    <PublisherDisplayName>MiniDfx</PublisherDisplayName>
+    <PublisherDisplayName>Burgy Benjamin</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
