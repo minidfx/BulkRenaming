@@ -42,14 +42,8 @@ namespace BulkRenaming.ViewModels
             this.Files = Enumerable.Empty<IListViewModel>();
             this.FolderSelected = "Select a folder by clicking on the right button";
 
-            this.Pattern = new ReactiveProperty<string>()
-                .Throttle(TimeSpan.FromMilliseconds(200))
-                .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
-                .ToReactiveProperty();
-            this.ReplacePattern = new ReactiveProperty<string>()
-                .Throttle(TimeSpan.FromMilliseconds(200))
-                .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
-                .ToReactiveProperty();
+            this.Pattern = new ReactiveProperty<string>();
+            this.ReplacePattern = new ReactiveProperty<string>();
         }
 
         #endregion
@@ -91,8 +85,8 @@ namespace BulkRenaming.ViewModels
                     await file.StorageFile.RenameAsync(file.FuturResult);
                 }
 
-                await this.FetchFolderAsync().ConfigureAwait(false);
-                await this.CalculateRegexAsync().ConfigureAwait(false);
+                await this.FetchFolderAsync();
+                await this.CalculateRegexAsync();
             }
         }
 
@@ -114,12 +108,12 @@ namespace BulkRenaming.ViewModels
                     return;
                 }
 
-                await this.FetchFolderAsync().ConfigureAwait(false);
+                await this.FetchFolderAsync();
 
                 this.FolderSelected = this._folderSelected.Path;
                 this.NotifyOfPropertyChange(() => this.FolderSelected);
 
-                await this.CalculateRegexAsync().ConfigureAwait(false);
+                await this.CalculateRegexAsync();
             }
         }
 
@@ -152,9 +146,13 @@ namespace BulkRenaming.ViewModels
             base.OnActivate();
 
             this._disposables.Add(this.Pattern
-                                      .Do(async pattern => await this.CalculateRegexAsync(pattern).ConfigureAwait(false))
+                                      .Throttle(TimeSpan.FromMilliseconds(200))
+                                      .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
+                                      .Do(async pattern => await this.CalculateRegexAsync(pattern))
                                       .Merge(this.ReplacePattern
-                                                 .Do(async replacePattern => await this.CalculateReplacePatternAsync(replacePattern).ConfigureAwait(false)))
+                                                 .Throttle(TimeSpan.FromMilliseconds(200))
+                                                 .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
+                                                 .Do(async replacePattern => await this.CalculateReplacePatternAsync(replacePattern)))
                                       .SubscribeOn(TaskPoolScheduler.Default)
                                       .ObserveOn(TaskPoolScheduler.Default)
                                       .Subscribe());
@@ -175,11 +173,17 @@ namespace BulkRenaming.ViewModels
 
                 foreach (var item in this.Files.Where(x => x.RegexMatch.Success))
                 {
-                    var match = item.RegexMatch;
-                    var futurResult = match.Result(replacePattern).Replace("%i", increment++.ToString());
-                    var fileExists = files.Any(x => x.Name.Equals(futurResult));
+                    try
+                    {
+                        var match = item.RegexMatch;
+                        var futurResult = match.Result(replacePattern).Replace("%i", increment++.ToString());
+                        var fileExists = files.Any(x => x.Name.Equals(futurResult));
 
-                    item.FuturResult = fileExists ? null : futurResult;
+                        item.FuturResult = fileExists ? null : futurResult;
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
                 }
 
                 this.CanApplyAsync = this.Files.Any(x => x.RegexMatch.Success) && this.ReplacePattern.Value != null;
