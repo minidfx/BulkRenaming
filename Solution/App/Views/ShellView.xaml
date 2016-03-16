@@ -13,6 +13,7 @@
         <micro:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:GetArrayValueConverter x:Key="GetArrayValueConverter" />
         <converters:NullVisibilityConverter x:Key="NullVisibilityConverter" />
+        <converters:GreaterThanConverter x:Key="GreaterThanConverter" />
     </Page.Resources>
 
     <Grid>
@@ -98,9 +99,11 @@
                             Margin="10">
                     <controls:WatermarkTextBox WatermarkText="Capture regex"
                                                Text="{Binding Pattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                               Margin="0 0 0 10" />
+                                               Margin="0 0 0 10"
+                                               IsEnabled="{Binding Files, Converter={StaticResource GreaterThanConverter}, ConverterParameter=0}" />
                     <controls:WatermarkTextBox WatermarkText="New filename pattern"
-                                               Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                               Text="{Binding ReplacePattern.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                               IsEnabled="{Binding Files, Converter={StaticResource GreaterThanConverter}, ConverterParameter=0}" />
                 </StackPanel>
 
                 <!-- ReSharper disable once NotAccessedField.Local -->
