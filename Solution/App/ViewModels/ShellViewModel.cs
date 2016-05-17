@@ -21,6 +21,12 @@ namespace BulkRenaming.ViewModels
 {
     public sealed class ShellViewModel : Screen, IShellViewModel
     {
+        #region Fields and Constants
+
+        private static readonly ILog Logger = LogManager.GetLog(typeof (ShellViewModel));
+
+        #endregion
+
         #region Fields
 
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
@@ -76,17 +82,28 @@ namespace BulkRenaming.ViewModels
 
         public async Task ApplyAsync()
         {
-            this.IsLoading = true;
-
-            using (Disposable.Create(() => this.IsLoading = false))
+            try
             {
-                foreach (var file in this.Files.Where(x => x.FuturResult != null))
-                {
-                    await file.StorageFile.RenameAsync(file.FuturResult);
-                }
+                this.IsLoading = true;
 
-                await this.FetchFolderAsync();
-                await this.CalculateRegexAsync();
+                using (Disposable.Create(() => this.IsLoading = false))
+                {
+                    var actualFiles = await this._folderSelected.GetFilesAsync();
+
+                    foreach (var file in this.Files.AsParallel()
+                                             .Where(x => x.FuturResult != null &&
+                                                         actualFiles.Any(f => f.Path == x.StorageFile.Path)))
+                    {
+                        await file.StorageFile.RenameAsync(file.FuturResult);
+                    }
+
+                    await this.FetchFolderAsync();
+                    this.CalculateRegex();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
             }
         }
 
@@ -113,7 +130,7 @@ namespace BulkRenaming.ViewModels
                 this.FolderSelected = this._folderSelected.Path;
                 this.NotifyOfPropertyChange(() => this.FolderSelected);
 
-                await this.CalculateRegexAsync();
+                this.CalculateRegex();
             }
         }
 
@@ -148,38 +165,43 @@ namespace BulkRenaming.ViewModels
             this._disposables.Add(this.Pattern
                                       .Throttle(TimeSpan.FromMilliseconds(200))
                                       .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
-                                      .Do(async pattern => await this.CalculateRegexAsync(pattern))
+                                      .Do(this.CalculateRegex)
                                       .Merge(this.ReplacePattern
                                                  .Throttle(TimeSpan.FromMilliseconds(200))
                                                  .Select(x => string.IsNullOrWhiteSpace(x) ? null : x)
-                                                 .Do(async replacePattern => await this.CalculateReplacePatternAsync(replacePattern)))
+                                                 .Do(this.CalculateReplacePattern))
                                       .SubscribeOn(TaskPoolScheduler.Default)
-                                      .ObserveOn(TaskPoolScheduler.Default)
-                                      .Subscribe());
+                                      .ObserveOn(UIDispatcherScheduler.Default)
+                                      .Subscribe(x =>
+                                      {
+                                          foreach (var file in this.Files)
+                                          {
+                                              file.NotifyUi();
+                                          }
+
+                                          this.NotifyOfPropertyChange(() => this.CanApplyAsync);
+                                      },
+                                                 e => { Logger.Error(e); }));
         }
 
-        private Task CalculateReplacePatternAsync()
+        private void CalculateReplacePattern()
         {
-            return this.CalculateReplacePatternAsync(this.ReplacePattern.Value);
+            this.CalculateReplacePattern(this.ReplacePattern.Value);
         }
 
-        private async Task CalculateReplacePatternAsync(string replacePattern)
+        private void CalculateReplacePattern(string replacePattern)
         {
             // When the replace pattern is specified
             if (!string.IsNullOrWhiteSpace(replacePattern))
             {
                 var increment = 1;
-                var files = await this._folderSelected.GetFilesAsync();
 
                 foreach (var item in this.Files.Where(x => x.RegexMatch.Success))
                 {
                     try
                     {
                         var match = item.RegexMatch;
-                        var futurResult = match.Result(replacePattern).Replace("%i", increment++.ToString());
-                        var fileExists = files.Any(x => x.Name.Equals(futurResult));
-
-                        item.FuturResult = fileExists ? null : futurResult;
+                        item.FuturResult = match.Result(replacePattern).Replace("%i", increment++.ToString());
                     }
                     catch (ArgumentException)
                     {
@@ -187,7 +209,6 @@ namespace BulkRenaming.ViewModels
                 }
 
                 this.CanApplyAsync = this.Files.Any(x => x.RegexMatch.Success) && this.ReplacePattern.Value != null;
-                this.NotifyOfPropertyChange(() => this.CanApplyAsync);
             }
             else
             {
@@ -197,16 +218,15 @@ namespace BulkRenaming.ViewModels
                 }
 
                 this.CanApplyAsync = false;
-                this.NotifyOfPropertyChange(() => this.CanApplyAsync);
             }
         }
 
-        private Task CalculateRegexAsync()
+        private void CalculateRegex()
         {
-            return this.CalculateRegexAsync(this.Pattern.Value);
+            this.CalculateRegex(this.Pattern.Value);
         }
 
-        private Task CalculateRegexAsync(string pattern)
+        private void CalculateRegex(string pattern)
         {
             if (pattern == null)
             {
@@ -216,7 +236,7 @@ namespace BulkRenaming.ViewModels
                     file.FuturResult = null;
                 }
 
-                return Task.FromResult(0);
+                return;
             }
 
             Regex regex;
@@ -232,7 +252,7 @@ namespace BulkRenaming.ViewModels
                     item.Parts = new[] {item.FileName};
                 }
 
-                return Task.FromResult(0);
+                return;
             }
 
             // Items with a match
@@ -253,7 +273,7 @@ namespace BulkRenaming.ViewModels
                                  : new[] {item.FileName};
             }
 
-            return this.CalculateReplacePatternAsync();
+            this.CalculateReplacePattern();
         }
 
         /// <summary>

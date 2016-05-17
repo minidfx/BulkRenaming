@@ -11,14 +11,6 @@ namespace BulkRenaming.ViewModels
 {
     public sealed class ListViewModel : ViewAware, IListViewModel
     {
-        #region Fields
-
-        private string _futurResult;
-
-        private IEnumerable<string> _parts;
-
-        #endregion
-
         #region Constructors
 
         public ListViewModel(string fileName, StorageFile storageFile)
@@ -36,26 +28,20 @@ namespace BulkRenaming.ViewModels
 
         public StorageFile StorageFile { get; }
 
-        public string FuturResult
-        {
-            get { return this._futurResult; }
-            set
-            {
-                this._futurResult = value;
-                this.NotifyOfPropertyChange(() => this.FuturResult);
-            }
-        }
+        public string FuturResult { get; set; }
 
         public Match RegexMatch { get; set; }
 
-        public IEnumerable<string> Parts
+        public IEnumerable<string> Parts { get; set; }
+
+        #endregion
+
+        #region Interface Implementations
+
+        public void NotifyUi()
         {
-            get { return this._parts; }
-            set
-            {
-                this._parts = value;
-                this.NotifyOfPropertyChange(() => this.Parts);
-            }
+            this.NotifyOfPropertyChange(() => this.Parts);
+            this.NotifyOfPropertyChange(() => this.FuturResult);
         }
 
         #endregion

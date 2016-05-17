@@ -20,5 +20,11 @@ namespace BulkRenaming.ViewModels.Contracts
         StorageFile StorageFile { get; }
 
         #endregion
+
+        #region All other members
+
+        void NotifyUi();
+
+        #endregion
     }
 }
