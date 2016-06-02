@@ -82,28 +82,22 @@ namespace BulkRenaming.ViewModels
 
         public async Task ApplyAsync()
         {
-            try
-            {
-                this.IsLoading = true;
+            this.IsLoading = true;
 
-                using (Disposable.Create(() => this.IsLoading = false))
+            using (Disposable.Create(() => this.IsLoading = false))
+            {
+                var actualFiles = await this._folderSelected.GetFilesAsync();
+
+                foreach (var file in this.Files.AsParallel()
+                                         .Where(x => x.FuturResult != null &&
+                                                     actualFiles.Any(f => f.Path == x.StorageFile.Path)
+                                                     && x.FileName != x.FuturResult))
                 {
-                    var actualFiles = await this._folderSelected.GetFilesAsync();
-
-                    foreach (var file in this.Files.AsParallel()
-                                             .Where(x => x.FuturResult != null &&
-                                                         actualFiles.Any(f => f.Path == x.StorageFile.Path)))
-                    {
-                        await file.StorageFile.RenameAsync(file.FuturResult);
-                    }
-
-                    await this.FetchFolderAsync();
-                    this.CalculateRegex();
+                    await file.StorageFile.RenameAsync(file.FuturResult);
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
+
+                await this.FetchFolderAsync();
+                this.CalculateRegex();
             }
         }
 
@@ -196,7 +190,12 @@ namespace BulkRenaming.ViewModels
             {
                 var increment = 1;
 
-                foreach (var item in this.Files.Where(x => x.RegexMatch.Success))
+                foreach (var item in this.Files.Where(x => x.RegexMatch == null || !x.RegexMatch.Success))
+                {
+                    item.FuturResult = null;
+                }
+
+                foreach (var item in this.Files.Where(x => x.RegexMatch != null && x.RegexMatch.Success))
                 {
                     try
                     {
@@ -208,7 +207,7 @@ namespace BulkRenaming.ViewModels
                     }
                 }
 
-                this.CanApplyAsync = this.Files.Any(x => x.RegexMatch.Success) && this.ReplacePattern.Value != null;
+                this.CanApplyAsync = this.Files.Any(x => x.RegexMatch != null && x.RegexMatch.Success) && this.ReplacePattern.Value != null;
             }
             else
             {
@@ -250,6 +249,7 @@ namespace BulkRenaming.ViewModels
                 foreach (var item in this.Files)
                 {
                     item.Parts = new[] {item.FileName};
+                    item.FuturResult = null;
                 }
 
                 return;
